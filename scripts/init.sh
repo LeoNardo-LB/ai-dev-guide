@@ -65,11 +65,15 @@ print(f'✓ 复制 {len(copied)} 份部署文档' + (f'（裁剪 {len(skipped)}�
 for s in skipped: print('  裁剪:', s)
 PYEOF
 
-# 1b. 复制运维脚本（版本/批次/门禁/升级工具随部署走）
+# 1b. 复制运行时脚本（目标项目内可独立运行者）
+#     check.sh(部署门禁) + _gates.py(其依赖) + new-batch.sh + release-version.sh
+#     init/upgrade/gen-index 依赖源仓 manifest，不随部署（升级用源仓 upgrade.sh）
 mkdir -p "$DEST/scripts"
-cp "$HERE"/*.sh "$HERE"/*.py "$DEST/scripts/" 2>/dev/null || true
+for S in check.sh _gates.py new-batch.sh release-version.sh; do
+  cp "$HERE/$S" "$DEST/scripts/$S"
+done
 chmod +x "$DEST/scripts/"*.sh
-echo "✓ 复制运维脚本 → $SYSNAME/scripts/（release-version / new-batch / check / upgrade）"
+echo "✓ 复制运行时脚本 → $SYSNAME/scripts/（check / new-batch / release-version）"
 
 # 2. 生成 AGENTS.md
 if [ -f "$TARGET/AGENTS.md" ]; then
@@ -122,7 +126,8 @@ done
 echo "✓ docs/{journal,specs,research,archive} 就绪"
 
 # 5. 悬空链接清洗（裁剪/源平面目标的链接改纯文本）
-python3 "$HERE/_scrub_links.py" "$DEST" "$TARGET/CONTEXT.md" "$TARGET/backlog.md" 2>/dev/null || true
+#     含生成的 AGENTS.md（$OUT）：--no-ui 等裁剪后模板正文手写链接可能悬空，一并转纯文本
+python3 "$HERE/_scrub_links.py" "$DEST" "$OUT" "$TARGET/CONTEXT.md" "$TARGET/backlog.md" 2>/dev/null || true
 
 # 6. 残留占位符报告（人工补填清单）
 echo

@@ -2,6 +2,13 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.3.1] - 2026-08-24
+
+### Fixed
+
+- init.sh 部署脚本子集修正：只复制目标项目内可独立运行的运行时脚本（check/_gates/new-batch/release-version）；init/upgrade/gen-index 依赖源仓 manifest，不再误导性部署
+- init.sh 链接清洗覆盖生成的 AGENTS.md——修复 --no-ui 裁剪后模板正文手写链接悬空导致部署门禁 1 失败
+
 ## [2.3.0] - 2026-08-24
 
 ### Added

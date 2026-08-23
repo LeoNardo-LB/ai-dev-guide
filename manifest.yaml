@@ -10,7 +10,7 @@
 
 system:
   name: ai-dev-guide
-  version: 2.3.0
+  version: 2.3.1
   language: zh
   description: 可整体复制到任意项目的渐进式披露 AI 开发文档系统
   entry: AGENTS.md.template
