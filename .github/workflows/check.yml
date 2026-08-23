@@ -1,0 +1,17 @@
+name: check
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  selftest:
+    name: 系统自检（语法 + 十门禁 + 敏感信息扫描 + 部署演练 + 版本阶梯演练）
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: 运行 selftest
+        run: bash scripts/selftest.sh

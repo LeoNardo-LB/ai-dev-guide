@@ -2,6 +2,13 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.3.0] - 2026-08-24
+
+### Added
+
+- 新增 scripts/scan-secrets.sh 敏感信息扫描：私钥/证书块、各家 API token 格式、密钥赋值、内网地址、个人信息五类检测；scripts/scan-secrets.allow 白名单（glob 或字面量）；已挂入 selftest 第 2.5 段与 CI——公开仓库强制
+- 补齐 .github/workflows/check.yml（此前写入静默丢失，本次已验证存在于磁盘与 git）
+
 ## [2.2.0] - 2026-08-21
 
 ### Added

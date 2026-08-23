@@ -31,6 +31,9 @@ EOF
 echo "== 2. 源仓十项门禁 =="
 bash scripts/check.sh || FAIL=1
 
+echo "== 2.5 敏感信息扫描（公开仓库强制）=="
+bash scripts/scan-secrets.sh || FAIL=1
+
 if [ "$QUICK" = 0 ]; then
   echo "== 3. 部署演练（init --no-example + 部署门禁）=="
   TMP="$(mktemp -d)"
