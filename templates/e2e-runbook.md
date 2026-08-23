@@ -32,7 +32,7 @@
 
 **证据落盘**：`<research 目录>/<证据路径>`（截图 / 日志 / API 响应）
 
-**B2. 问题归属三分类**（与 [../workflows/verify.md](../workflows/verify.md) §5.1 差异三类归属一致）：
+**B2. 问题归属三分类**（本节为差异归属的唯一归宿；重测档位按 [../workflows/verify.md](../workflows/verify.md) §5 分档执行）：
 
 | 归属 | 判定 | 处理 |
 |------|------|------|

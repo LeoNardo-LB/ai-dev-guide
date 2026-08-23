@@ -17,7 +17,7 @@ MODE="source"; TARGET=""
 ONLY=""; SKIP=""
 while [ $# -gt 0 ]; do
   case "$1" in
-    --deployed) MODE="deployed"; TARGET="$(cd "$2" && pwd)"; shift 2 ;;
+    --deployed) MODE="deployed"; TARGET="$(cd "$2" 2>/dev/null && pwd)"; shift 2 ;;
     --only) ONLY="$2"; shift 2 ;;
     --skip) SKIP="$2"; shift 2 ;;
     *) echo "未知参数 $1"; exit 2 ;;
@@ -25,7 +25,18 @@ while [ $# -gt 0 ]; do
 done
 
 if [ "$MODE" = "source" ]; then ROOT="$HERE/.."; else ROOT="$TARGET"; fi
-cd "$ROOT"
+if [ "$MODE" = "deployed" ] && { [ -z "$TARGET" ] || [ ! -d "$TARGET" ]; }; then
+  echo "✗ --deployed 目标目录不存在或不可进入——拒绝回退到当前目录扫描"
+  exit 2
+fi
+cd "$ROOT" || { echo "✗ 无法进入 $ROOT"; exit 2; }
+# 部署模式：本脚本位于 <目标>/<sys>/scripts/ —— sys 目录名由此推得（支持 --dir 改名）
+if [ "$MODE" = "deployed" ]; then
+  SYS_DIR="$(basename "$(dirname "$HERE")")"
+else
+  SYS_DIR=""
+fi
+export DSH_GATE_MODE="$MODE" DSH_SYS_DIR="$SYS_DIR"
 FAIL=0; WARN=0; RAN=""
 
 want() {
@@ -128,7 +139,7 @@ if want 9; then mark 9
     else ok 9 "零完结残留"; fi
     NEXT=$(grep -oP '下一编号：\*\*#\K[0-9]+' backlog.md | head -1)
     if [ -n "$NEXT" ]; then
-      MAX=$(cat backlog.md docs/journal/*.md docs/specs/*.md 2>/dev/null | grep -v '下一编号' | grep -oP '(^|\*\*|>)#\K[0-9]{1,4}(?=[\s：:*）])' | sort -n | tail -1)
+      MAX=$(cat backlog.md docs/journal/*.md docs/specs/*.md 2>/dev/null | grep -v '下一编号' | grep -oP '(^|\s|\*\*|>)#\K[0-9]{1,4}(?=[\s：:*）]|$)' | sort -n | tail -1)
       [ -z "$MAX" ] && MAX=0
       if [ "$NEXT" -le "$MAX" ]; then bad 9 "计数器 #$NEXT ≤ 最大编号 #$MAX"; else ok 9 "计数器 #$NEXT > #$MAX"; fi
     else bad 9 "缺「下一编号：**#N**」计数器"; fi

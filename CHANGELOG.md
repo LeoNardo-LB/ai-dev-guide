@@ -2,6 +2,38 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.4.0] - 2026-08-24
+
+全仓系统性审计修复：脚本能力逐条实测 + 文档描述双向核对（41 份文档 + 11 个脚本），共修复脚本缺陷 10 项、文档缺陷 30 余项，并全部固化为 selftest 回归断言（R1-R11）。
+
+### Fixed（脚本，按严重度）
+
+- scan-secrets.sh 统计跑在管道子 shell——命中全丢、退出码恒 0，**公开仓库泄密也不会拦截**；重写为主 shell 计数，实测 6 处命中 → exit 1
+- scan-secrets.sh 白名单规则被同时当内容子串匹配——行内提及脚本路径即放行同行的真实密码；拆分为路径 glob 与「:字面量」内容豁免两种语义
+- check.sh --deployed 指向不存在目录时静默回退到当前目录扫描（实测产出 44 条假断链）；现在拒绝并 exit 2
+- 部署门禁 1 误扫目标项目用户自有 .md（用户旧笔记断链导致系统门禁失败）；改为只扫系统产物（目录名由脚本位置推导，支持 --dir 改名）
+- upgrade.sh 全新部署零修改即报 11 处「双方修改需人工合并」；init.sh 现写部署基线 .deploy-baseline.txt，升级比对区分「可直接覆盖/本地化修改/无基线退化」三态
+- init.sh 用 echo "\n" 写登记目录 README → 落盘为字面反斜杠 n；改 printf 真实换行
+- gen-index.py --check 对 GEN 标记被删只警告不失败；缺标记即判漂移 exit 1
+- 门禁 9 计数器漏计行尾裸编号与空格后的 #N → 计数器可与已用编号撞号；正则修正
+- release-version.sh 静默吞掉杂散位置参数（next stray --bump patch 照常执行）；非 init 命令一律拒绝
+- journal-entry.md 模板本体包在代码围栏里——new-batch.sh 产物 H1 仍是「模板」标题且相对链接必断；重构为整文件即条目（零相对链接）
+
+### Fixed（文档，择要）
+
+- release.md 虚构「发版脚本 commit/tag/push/触发 CI」能力链——脚本实际只管版本相位；改为如实双轨表述
+- research-report.md 11 处：D0-D4 数字编号维度（全系统禁用）改命名维度、两对 §节号互换错位、根因型/补丁型词汇统一为根治/补丁
+- requirement.md 自拟 P0-P2 三级与六态生命周期词表（与需求工作流锁定的唯一归宿词表冲突）；改指唯一归宿
+- manifest/onboarding GEN 表：裁剪组表混入不部署的 source 面治理文档；registries「init 复制到 docs/」声称与 init 行为不符——init 现真正实例化能力域与债务登记簿，两处声明同时为真
+- spec/plan/e2e 模板：虚构的 specs/、plans/ 存放路径（与 docs/specs/ 及命名门禁矛盾）、8 处 §引用错节、「P0 域」与优先级词表撞名
+- backlog-entry.md 门禁能力过述（无检查项称「强制」、警告项称「强制」）；按实际强制/警告/纪律如实标注
+
+### Added
+
+- selftest.sh 部署演练扩为缺陷回归断言 R1-R11：历史修过的每个缺陷都有一条会失败的测试（含扫描器夹具仓断言 R9/R10，不触碰真仓库）
+- init.sh：实例化能力域/债务登记簿到 docs/、写部署基线、部署 scan-secrets（含白名单）、sysname 合法性与自指目标校验
+- upgrade.sh：基线感知漂移报告（可直接覆盖/本地化修改/上游有-部署缺/本地新增四类 + 建议动作）
+
 ## [2.3.1] - 2026-08-24
 
 ### Fixed

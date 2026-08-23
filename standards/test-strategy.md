@@ -1,7 +1,7 @@
 # 测试策略（Test Strategy）
 
 > 测试金字塔分层、各层覆盖要求、Mock 纪律与测试纪律；决定「写什么测试、写到什么程度」。
-> 具体框架与命令的真相源是 [stack-profile.md](../stack/stack-profile.md) §6；完成判定见 [verify.md](../workflows/verify.md)。
+> 具体框架与命令的真相源是 [stack-profile.md](../stack/stack-profile.md) §4（测试栈）与 §5（命令符号）；完成判定见 [verify.md](../workflows/verify.md)。
 
 ## Use when
 

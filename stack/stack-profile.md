@@ -73,6 +73,7 @@ RUN     # 完整构建命令，超时 N 秒——待填
 
 | 项 | 内容 |
 |----|------|
+| 版本文件 | ⚠ 待填（KEY=VALUE 文本路径；相位管理见 [release.md](../workflows/release.md) §2.2） |
 | 密钥/证书 | ⚠ 待填（密码不进 git；CI 用 Secrets） |
 | 发布渠道 | 待填 |
 | 发布验证 | 待填（签名证书校验命令；流程见 [release.md](../workflows/release.md)） |

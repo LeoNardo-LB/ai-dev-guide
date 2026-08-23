@@ -11,14 +11,14 @@
 
 ## 1. 总览：脚本 + 手动双轨
 
-| 轨道 | 适用 |
-|------|------|
-| 发版脚本（默认） | 分析 commit → 计算版本 → 更新版本号 → 生成 Release Notes 草稿 → 更新 CHANGELOG（仅正式版）→ commit/tag/push → 触发 CI 构建与 Release |
-| 手动流程（[release-runbook.md](../templates/release-runbook.md)） | 仅脚本不可用时；逐项执行并核对红线清单 |
+| 轨道 | 覆盖范围 |
+|------|----------|
+| 版本脚本 scripts/release-version.sh | **只管版本相位**：init / next --bump / dev / beta / stable / validate——阶梯强制、非法转移拒绝、VERSION_CODE 递增、格式校验 |
+| 手动流程（[release-runbook.md](../templates/release-runbook.md)） | 其余全部步骤：递进判据判断、Release Notes 草稿、CHANGELOG 更新（仅正式版）、commit/tag/push、构建与发布、发版后验证——逐项执行并核对红线清单 |
 
-自动化分工原理：「算版本」依赖完整 git 历史与写仓库权限，本地完成；「出产物」依赖干净环境与密钥，CI 完成。两者分离后任何一步出问题都可独立重跑，产物永远由同一条流水线产出。
+分工原理：递进字段（major/minor/patch）由人按 §2.1 语义判断并以 `--bump` 告知脚本；脚本强制阶梯与格式（人不能跳级、不能手改号）；产物构建在本地或 CI 完成，密钥只经 CI Secrets 注入。任何一步出问题都可独立重跑。
 
-违反后果：跳过脚本手工操作 → 版本号/tag/Release 不一致。
+违反后果：绕过脚本手工改号 → 版本号/tag/Release 不一致、非法相位流出。
 
 ## 2. 版本规则
 
@@ -86,7 +86,7 @@
 | 密钥不入库：release keystore 及密码不进版本库 | 密钥泄露 → 产物可被伪造 |
 | CI 用 Secrets 注入 | 密钥明文进配置/日志 |
 | Secrets 未配置时构建回退 debug 签名，且全新 runner 每次生成不同 debug keystore → 每次发版签名不同 → 用户升级报「签名冲突」；发版前必须核对 Secrets 齐全 | 用户被迫卸载重装，数据丢失 |
-| 发版后验证产物签名（release 证书而非默认 debug 证书；验证命令见栈档案 §7） | 签名错误到用户端才发现 |
+| 发版后验证产物签名（release 证书而非默认 debug 证书；验证命令见 [stack-profile.md](../stack/stack-profile.md) §6 发布验证行） | 签名错误到用户端才发现 |
 
 ## 6. CHANGELOG 与 Release Notes 分工
 

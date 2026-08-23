@@ -32,12 +32,17 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1; shift ;;
     --bump) BUMP="$2"; shift 2 ;;
-    *) [ -z "$EXTRA" ] || { echo "✗ 未知参数 $1"; exit 2; }
+    *) [ -z "$EXTRA" ] || { echo "✗ 多余的位置参数：$1"; exit 2; }
        EXTRA="$1"; shift ;;
   esac
 done
 
 die() { echo "✗ $1"; exit 1; }
+
+# 位置参数只对 init（版本号）合法；其余命令出现即拒（防静默吞参）
+if [ "$CMD" != "init" ] && [ -n "$EXTRA" ]; then
+  die "$CMD 不接受位置参数：$EXTRA"
+fi
 
 read_file() {
   [ -f "$FILE" ] || die "版本文件不存在：$FILE（用 init <x.y.z> 创建）"
@@ -70,6 +75,7 @@ parse() { # 解析 $VN → 相位
 
 case "$CMD" in
   current)
+    [ -z "$EXTRA" ] || { echo "✗ current 不接受位置参数：$EXTRA"; exit 2; }
     read_file; echo "$VN" ;;
 
   init)

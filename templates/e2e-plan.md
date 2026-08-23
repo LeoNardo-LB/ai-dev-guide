@@ -19,7 +19,7 @@
 
 ### Part A — <功能名> E2E 测试期望文档
 
-> 被测对象：<SUT>（如：主对话界面全生命周期）· 关联 spec：<spec 编号>（见 [./spec.md](./spec.md)）· 配套实操文档：`<功能名>-e2e-runbook.md` · 测试工具：<E2E 工具>（命令与安装见 [../stack/stack-profile.md](../stack/stack-profile.md)）
+> 被测对象：<SUT>（如：主对话界面全生命周期）· 关联 spec：<spec 文件名，spec 头部挂 backlog 编号，见 [./spec.md](./spec.md)> · 配套实操文档：`<功能名>-e2e-runbook.md` · 测试工具：<E2E 工具>（命令与安装见 [../stack/stack-profile.md](../stack/stack-profile.md)）
 
 **A0. 编排评估**：每项验证点归入三类，核心断言优先 SCR：
 
@@ -62,11 +62,11 @@
 | P2（补充） | <P2 用例> | 边界与极端场景 |
 
 **A3. 通过标准（汇总）**：一份 E2E「通过」= 满足：
-1. P0 用例全部通过（每用例 ≥2 独立维度交叉验证，见 [../workflows/verify.md](../workflows/verify.md) §2）
+1. P0 用例全部通过（每用例 ≥2 独立维度交叉验证，见 [../workflows/verify.md](../workflows/verify.md) §3）
 2. P1 用例 ≥<P1 阈值>%（默认 80%）通过；未通过项登记到实操文档「未达成项」
 3. 无崩溃日志
 4. 实操文档记录完整：操作时间线 + 实际观察 + 对比期望 + 判定
-5. 档位联动：小改走冒烟档、发版 / 跨层重构走全面档（[../workflows/verify.md](../workflows/verify.md) §4 E2E 分档）
+5. 档位联动：小改走冒烟档、发版 / 跨层重构走全面档（[../workflows/verify.md](../workflows/verify.md) §5 E2E 分档）
 
 
 

@@ -143,9 +143,11 @@ def gen_full_table(data):
     return "\n".join(rows)
 
 def gen_trim_table(data):
-    """onboarding 的裁剪组表体。"""
+    """onboarding 的裁剪组表体（只列部署面文档——目标项目里不存在 source 面文件）。"""
     groups = {}
     for d in data["docs"]:
+        if d["plane"] != "deployed":
+            continue
         groups.setdefault(d["trim_group"], []).append(d)
     rows = ["| 裁剪组 | 文档 | 何时可删 |", "|--------|------|----------|"]
     policy = {
@@ -201,7 +203,8 @@ def main():
             start, end = f"<!-- GEN:{name}:start -->", f"<!-- GEN:{name}:end -->"
             txt = open(path, encoding="utf-8").read()
             if start not in txt:
-                print(f"⚠ {os.path.relpath(path, ROOT)} 缺 {name} 标记")
+                print(f"✗ {os.path.relpath(path, ROOT)} 缺 {name} 标记——GEN 段被删除也算漂移")
+                drifted.append(name)
                 continue
             cur = txt.split(start, 1)[1].split(end, 1)[0].strip()
             if cur != body.strip():

@@ -11,9 +11,9 @@
 
 | # | 步骤 | 命令 | 脚本做什么 |
 |---|------|------|-----------|
-| 1 | 部署 | ./scripts/init.sh 目标项目根 | 按裁剪组复制部署平面 → 生成 AGENTS.md（索引实例化）→ 实例化 backlog/CONTEXT/登记目录 → 跑部署门禁 → 报告待补占位符 |
+| 1 | 部署 | ./scripts/init.sh 目标项目根（在本源仓运行；目标项目内只有 check/new-batch/release-version/scan-secrets 四个运行时脚本） | 按裁剪组复制部署平面 → 生成 AGENTS.md（索引实例化）→ 实例化 backlog/CONTEXT/能力域/债务登记簿 → 跑部署门禁 → 报告待补占位符 |
 | 2 | 补填 | 人工 | AGENTS.md 的项目占位符 + stack-profile.md 栈事实 + CONTEXT.md 首批术语 + 3-5 条承重红线 |
-| 3 | 提交 | git | AGENTS.md + 系统目录 + backlog.md + CONTEXT.md + docs/ 同 commit；backlog 首条登记「文档系统初始化」 |
+| 3 | 提交 | git | AGENTS.md + 系统目录 + backlog.md + CONTEXT.md + docs/ 同 commit（可先跑 系统目录/scripts/scan-secrets.sh）；backlog 首条登记「文档系统初始化」 |
 
 init.sh 选项：--dir 系统目录名（默认 ai-dev-guide）· --no-ui（无 UI 项目）· --no-example（非参考栈）。
 
@@ -22,7 +22,7 @@ init.sh 选项：--dir 系统目录名（默认 ai-dev-guide）· --no-ui（无 
 <!-- GEN:trim-table:start -->
 | 裁剪组 | 文档 | 何时可删 |
 |--------|------|----------|
-| core | `bootstrap/onboarding.md`、`meta/doc-governance.md`、`meta/doc-writing-standards.md`、`meta/edit-card.md`、`meta/system-design.md`、`stack/stack-profile.md`、`standards/architecture.md`、`standards/code-style.md`、`standards/reliability.md`、`standards/test-strategy.md`、`templates/ability-domains.md`、`templates/adr.md`、`templates/backlog-entry.md`、`templates/bug-record.md`、`templates/changelog.md`、`templates/context.md`、`templates/debt-entry.md`、`templates/e2e-plan.md`、`templates/e2e-runbook.md`、`templates/journal-entry.md`、`templates/plan.md`、`templates/release-notes.md`、`templates/release-runbook.md`、`templates/requirement.md`、`templates/research-report.md`、`templates/spec.md`、`templates/verification-node.md`、`workflows/bug.md`、`workflows/debt.md`、`workflows/dev.md`、`workflows/evidence.md`、`workflows/regression.md`、`workflows/release.md`、`workflows/requirements.md`、`workflows/verify.md` | 永不（系统核心） |
+| core | `bootstrap/onboarding.md`、`meta/edit-card.md`、`stack/stack-profile.md`、`standards/architecture.md`、`standards/code-style.md`、`standards/reliability.md`、`standards/test-strategy.md`、`templates/ability-domains.md`、`templates/adr.md`、`templates/backlog-entry.md`、`templates/bug-record.md`、`templates/changelog.md`、`templates/context.md`、`templates/debt-entry.md`、`templates/e2e-plan.md`、`templates/e2e-runbook.md`、`templates/journal-entry.md`、`templates/plan.md`、`templates/release-notes.md`、`templates/release-runbook.md`、`templates/requirement.md`、`templates/research-report.md`、`templates/spec.md`、`templates/verification-node.md`、`workflows/bug.md`、`workflows/debt.md`、`workflows/dev.md`、`workflows/evidence.md`、`workflows/regression.md`、`workflows/release.md`、`workflows/requirements.md`、`workflows/verify.md` | 永不（系统核心） |
 | registry | `registries/ability-domains.md`、`registries/architecture-debt.md`、`registries/backlog.md` | 永不（init 实例化源） |
 | stack-example | `stack/android-kotlin-example.md` | 非对应栈的项目 |
 | ui | `standards/ui-conventions.md`、`templates/manual-ui-checklist.md` | 无 UI 的项目（库/CLI） |
@@ -41,10 +41,10 @@ init.sh 选项：--dir 系统目录名（默认 ai-dev-guide）· --no-ui（无 
 ## 4. 上游升级
 
 ```
-./scripts/upgrade.sh 本仓库根 目标项目根 系统目录名
+./scripts/upgrade.sh 本仓库根 目标项目根 系统目录名   # 在本源仓运行
 ```
 
-输出逐文件漂移分类（一致/双方修改/上游新增/本地新增）+ 建议动作；只报告不自动覆盖——本地化修改需人工合并。
+输出逐文件漂移分类（一致/可直接覆盖/本地化修改/上游有-部署缺/本地新增）+ 建议动作；比对基准是部署时写下的 `.deploy-baseline.txt`（区分「用户本地化修改」与「上游更新」）；只报告不自动覆盖——本地化修改需人工合并。
 
 ## 5. FAQ
 

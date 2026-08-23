@@ -10,7 +10,11 @@
 # ============================================================
 import re, os, sys, glob
 
-def repo_files():
+DEPLOYED_SCOPE = ("AGENTS.md", "AGENTS.md.new", "CONTEXT.md", "backlog.md",
+                   "docs/ability-domains.md", "docs/architecture-debt.md")
+
+def repo_files(mode="source"):
+    """source 模式扫全仓；deployed 模式只扫本系统产物（用户自己的 md 不属门禁管辖）。"""
     files = [f for f in glob.glob("**/*.md", recursive=True)]
     files += [f for f in glob.glob("**/*.md.template", recursive=True)]
     files += ["AGENTS.md.template"] if os.path.exists("AGENTS.md.template") else []
@@ -18,6 +22,11 @@ def repo_files():
     for f in files:
         if f not in seen:
             seen.add(f); out.append(f)
+    if mode == "deployed":
+        sysdir = os.environ.get("DSH_SYS_DIR", "ai-dev-guide")
+        out = [f for f in out
+               if f in DEPLOYED_SCOPE or f.startswith(sysdir + "/")
+               or f.startswith("docs/journal/") or f.startswith("docs/specs/")]
     return out
 
 def hist_exempt(f):
@@ -33,7 +42,7 @@ def load_manifest():
 
 def gate_links(mode):
     broken = []
-    for f in repo_files():
+    for f in repo_files(mode):
         if hist_exempt(f): continue
         base = os.path.dirname(f)
         for i, line in enumerate(open(f, encoding="utf-8"), 1):
@@ -86,7 +95,7 @@ def gate_must():
 def gate_sections():
     bad_refs, total = [], 0
     headings = {}
-    for f in repo_files():
+    for f in repo_files(os.environ.get("DSH_GATE_MODE", "source")):
         if hist_exempt(f): continue
         base = os.path.dirname(f)
         for i, line in enumerate(open(f, encoding="utf-8"), 1):

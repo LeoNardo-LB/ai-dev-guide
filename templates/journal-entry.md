@@ -1,19 +1,7 @@
-# 批次日志模板（Journal Entry）
-
-> 工作批次的事实与证据记录骨架。journal 是 append-only 的执行日志：开工时创建，过程中证据直接写入，完结条目从 backlog 原文迁入。
-> 创建命令：scripts/new-batch.sh "批次名kebab"；文件命名 YYYY-MM-DD-<kebab>.md（门禁 10 校验）。
-
-## Use when
-
-- 开启新工作批次时（开工即建，不事后补写）
-- 记录取证/验证证据、迁移完结条目时
-
-## 模板本体
-
-```markdown
 # <YYYY-MM-DD> <批次名>
+
 > 状态：<进行中 / 部分完结 / 已完结>
-> 关联：<backlog #编号> · <spec 路径（如有）>
+> 关联：<backlog #编号> · <spec 文件名（如有）>
 
 ## 目标
 
@@ -30,21 +18,16 @@
 
 ## 蒸馏（可选）
 
-<可复用的结论提炼到 docs/research/ 后在此留链接>
-```
+<可复用的结论提炼到 docs/research/ 后在此写文件名>
 
-## 纪律
-
-| # | 规则 | 违反后果 |
-|---|------|----------|
-| 1 | 开工时创建（new-batch.sh），过程实时写入；不事后补写 | 证据失真、遗漏 |
-| 2 | 只追加不改写：历史轮次记录保持原样 | 差异分析失真 |
-| 3 | 完结条目原文迁入（不压缩不删改） | 历史信息丢失 |
-| 4 | journal 只记执行与证据；可复用结论蒸馏进 docs/research/ | 蒸馏结论埋没 |
-| 5 | 命名 YYYY-MM-DD-<kebab>.md | 排序与检索失效（门禁 10） |
-
-## Related
-
-- 需求工作流（迁移规则）：[../workflows/requirements.md](../workflows/requirements.md)
-- 待办卡片：[backlog-entry.md](./backlog-entry.md)
-- 验证节点模板：[verification-node.md](./verification-node.md)
+<!--
+本文件由 scripts/new-batch.sh 实例化（自动替换：日期与批次名）。
+模板纪律（实例化后保留本注释或删除均可）：
+  1. 开工时创建，过程实时写入；不事后补写——证据失真、遗漏
+  2. 只追加不改写：历史轮次记录保持原样——差异分析失真
+  3. 完结条目原文迁入（不压缩不删改）——历史信息丢失
+  4. journal 只记执行与证据；可复用结论蒸馏进 docs/research/——蒸馏结论埋没
+  5. 命名 YYYY-MM-DD-<kebab>.md——排序与检索失效（check.sh 门禁 10）
+  6. 本文件不写相对 md 链接（从 docs/journal/ 出发易断链）；引用文档用纯文本路径
+配套：workflows/requirements.md（迁移规则）、templates/backlog-entry.md、templates/verification-node.md
+-->

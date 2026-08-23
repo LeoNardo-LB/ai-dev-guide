@@ -4,13 +4,13 @@
 
 ## Use when
 
-- 需求达到写设计文档规模时（见 [../workflows/requirements.md](../workflows/requirements.md) §4 澄清与拆解）——先读本模板再填写
+- 需求达到写设计文档规模时（见 [../workflows/requirements.md](../workflows/requirements.md) §7 澄清与拆解）——先读本模板再填写
 - 实现前、设计评审前（spec 是评审与验证的锚点）
 - 设计发生变更、需要同步更新文档时
 
 ## 模板本体
 
-新建 `specs/<功能名>.md` 时复制以下各节，逐节填写；占位符一律用尖括号 <...>：
+新建 `docs/specs/YYYY-MM-DD-<kebab>.md`（active 目录；命名受 check.sh 门禁 10 约束）时复制以下各节，逐节填写；占位符一律用尖括号 <...>：
 
 ### 头部
 

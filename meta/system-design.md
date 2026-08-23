@@ -51,7 +51,7 @@
 | 9 | backlog 不变量（部署模式：零完结残留/计数器/悬空链接/节序） | 登记簿膨胀失控 |
 | 10 | journal/specs 命名规约（部署模式） | 批次文件不可排序 |
 
-执行方式：本地推送前与 CI（.github/workflows/check.yml）跑同一条命令 scripts/selftest.sh——语法 + 十门禁 + 部署演练 + 版本阶梯演练一体；本地通过 = CI 通过，杜绝「本地绿 CI 红」的分叉。
+执行方式：本地推送前与 CI（.github/workflows/check.yml）跑同一条命令 scripts/selftest.sh——语法 + 敏感信息扫描 + 十门禁 + 部署演练 + 版本阶梯演练一体；本地通过 = CI 通过，杜绝「本地绿 CI 红」的分叉。
 
 ## 5. 交叉引用总表（manifest 生成，勿手编）
 

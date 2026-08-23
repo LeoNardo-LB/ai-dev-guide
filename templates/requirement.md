@@ -17,8 +17,8 @@
 
 | 字段 | 值 |
 |------|----|
-| 状态 | <草稿 / 已澄清 / 开发中 / 待验收 / 已完成 / 已取消> |
-| 优先级 | <P0 / P1 / P2> |
+| 状态 | <状态词取自 [../workflows/requirements.md](../workflows/requirements.md) §4 状态流转（唯一归宿，不自创）> |
+| 优先级 | <P0 / P1 / P2 / P3，判据见 [../workflows/requirements.md](../workflows/requirements.md) §3（唯一归宿）> |
 | 登记日期 | <YYYY-MM-DD> |
 | 来源 | <用户 / backlog / bug / 代码审查> |
 
@@ -70,8 +70,8 @@
 
 | 字段 | 填写要求 | 反例（违反后果） |
 |------|----------|------------------|
-| 状态 | 单选一个生命周期状态，状态流与 [../workflows/requirements.md](../workflows/requirements.md) 一致 | 留空（无法追溯进展，需求失联） |
-| 优先级 | P0=阻塞/安全/数据事故，P1=近期计划，P2=可延后；定义与 [../workflows/requirements.md](../workflows/requirements.md) 一致 | 自创分级（跨文档冲突，排期失真） |
+| 状态 | 单选词表中的一个状态；词表与流转规则唯一归宿在 [../workflows/requirements.md](../workflows/requirements.md) §4，禁止在本卡自创状态词 | 留空（无法追溯进展，需求失联） |
+| 优先级 | P0-P3 四级；每级判据唯一归宿在 [../workflows/requirements.md](../workflows/requirements.md) §3，禁止自创分级或漏级 | 自创分级（跨文档冲突，排期失真） |
 | 背景 | 写现状与触发事件，1-3 句；不写解决方案 | 「增加导出功能」单句背景（无法判断为何做、何时算对） |
 | 目标 | 可观测结果，每条至少对应一条验收标准 | 「提升用户体验」（不可验证，无法验收） |
 | 用户故事 | 角色 + 动作 + 价值三要素齐全 | 「做一个设置页」（缺角色与价值，验收无锚点） |

@@ -19,7 +19,7 @@
 | UI dump | 界面节点树（节点 + bounds） | 节点存在性/位置/滚动有效性 | bounds 对比，不做哈希（§5） |
 | 截图 | 界面视觉状态 | 人工或视觉模型确认 | 静态快照，配合 UI dump（§5） |
 
-平台具体命令（日志抓取/数据库直查/截图工具）以 [android-kotlin-example.md](../stack/android-kotlin-example.md) 为范例，按栈填充 [stack-profile.md](../stack/stack-profile.md)。
+平台具体命令（日志抓取/数据库直查/截图工具）属**栈事实**：按本项目栈填写在 [stack-profile.md](../stack/stack-profile.md)（命令符号定义处 §5）；[android-kotlin-example.md](../stack/android-kotlin-example.md) 是栈档案的填写范例（不含观测命令）。
 
 ## 2. 日志观测
 
@@ -27,7 +27,7 @@
 
 - 按进程 + tag 过滤抓取；裸抓取会被系统噪音淹没，采集结果不能作为证据
 - 崩溃/ANR 从崩溃缓冲区单独抓取
-- 命令模板见栈档案 §8（网络与平台约束）
+- 具体抓取命令以 [stack-profile.md](../stack/stack-profile.md) §5 命令符号区为真相源（按栈填写，不在此复制命令模板）
 
 ### 2.2 关键 tag 速查表（随代码演进维护）
 

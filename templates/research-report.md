@@ -6,7 +6,7 @@
 
 - 诊断 bug、审计修复质量、做主题研究前（Part A，与 [../workflows/bug.md](../workflows/bug.md) 配合）
 - 回归走查后输出走查记录（Part B，判据与能力域清单以 [../workflows/regression.md](../workflows/regression.md) 为准）
-- 落盘位置：`docs/research/<topic>/`（归档层约定见 [../meta/doc-governance.md](../meta/doc-governance.md) §2）；证据文件同目录或 `metrics/` 子目录归档
+- 落盘位置：`docs/research/<topic>/`（从 journal 蒸馏的可复用结论；定期清理零引用者，git 历史可找回）；证据文件同目录或 `metrics/` 子目录归档
 
 ## 模板本体
 
@@ -16,7 +16,7 @@
 
 **A1. 标题**：`<主题> 调查报告` — 日期 <YYYY-MM-DD> · 状态 <进行中 / 已结论>
 
-**A2. 症状与环境**：可复现性是后续一切的前提（[../workflows/verify.md](../workflows/verify.md) §4 操作可复现）。记录复现步骤、设备/系统版本、构建号、环境与前置条件，并标注复现频率。
+**A2. 症状与环境**：可复现性是后续一切的前提（[../workflows/verify.md](../workflows/verify.md) §1 铁律：新鲜证据）。记录复现步骤、设备/系统版本、构建号、环境与前置条件，并标注复现频率。
 
 | 项 | 内容 |
 |----|------|
@@ -32,26 +32,26 @@
 |------|------------|
 | <YYYY-MM-DD> | <做了什么 / 发现了什么> |
 
-**A4. 假设列表**：每个假设一行，四要素缺一不可——提出依据 / 可证伪预测 / 证据 / 结论。证据须为可观测产出（[../workflows/evidence.md](../workflows/evidence.md) §7 证据模板）；无证据的假设标「待取证」，不得当作结论。
+**A4. 假设列表**：每个假设一行，四要素缺一不可——提出依据 / 可证伪预测 / 证据 / 结论。证据须为可观测产出（[../workflows/evidence.md](../workflows/evidence.md) §6 证据链四环）；无证据的假设标「待取证」，不得当作结论。
 
 | # | 假设 | 提出依据 | 可证伪预测 | 证据 | 结论 |
 |---|------|---------|-----------|------|------|
 | H1 | <> | <> | <若成立则 X 出现且 Y 不出现> | <日志 / DB / 直测结果> | <排除 / 确认 / 待取证> |
 
-**A5. 根因结论**：一段话说清根因 + 代码位置引用 + 为什么之前的修复没解决（补丁链回顾，见 [../workflows/bug.md](../workflows/bug.md) §1 诊断循环）。
+**A5. 根因结论**：一段话说清根因 + 代码位置引用 + 为什么之前的修复没解决（补丁链回顾，见 [../workflows/bug.md](../workflows/bug.md) §2 诊断循环）。
 
 **根因**：<一段话，落到结构性原因>
 
 - 代码位置：`<文件:行>`
 - 此前修复未解决的原因：<补丁链回顾>
 
-**A6. 修复方案**：方案 + 取舍；标注「根因型」或「补丁型」（判定见 [../workflows/bug.md](../workflows/bug.md) §6）。补丁型 🔴 必须走补丁三件事（§4：代码注释 + 债务登记 + 回访条件回填）。
+**A6. 修复方案**：方案 + 取舍；标注「根治型」或「补丁型」（判定三问见 [../workflows/bug.md](../workflows/bug.md) §4）。补丁型 🔴 必须走补丁三件事（[../workflows/bug.md](../workflows/bug.md) §6：代码注释 + 债务登记 + 回访条件回填）。
 
 | 方案 | 取舍 | 类型 |
 |------|------|------|
-| <> | <为什么这么做 / 放弃了什么> | <根因型 / 补丁型> |
+| <> | <为什么这么做 / 放弃了什么> | <根治型 / 补丁型> |
 
-**A7. 验证矩阵**：结论 × 维度交叉验证（维度组合见 [../workflows/verify.md](../workflows/verify.md) §2）；每个结论 ≥2 个独立维度并给出证据文件路径。
+**A7. 验证矩阵**：结论 × 维度交叉验证（必选维度组合见 [../workflows/verify.md](../workflows/verify.md) §3）；每个结论 ≥2 个独立维度并给出证据文件路径。
 
 | 结论 | 证据维度 A（证据） | 证据维度 B（证据） | 判定 |
 |------|---------------|---------------|------|
@@ -65,7 +65,7 @@
 
 ### Part B · 回归报告（RG）
 
-> 一次走查一份，证据随 commit / PR 归档；判据（能力域清单、回归维度定义、证据命名）以 [../workflows/regression.md](../workflows/regression.md) §3 与 §4 为准，此处不重复判据。
+> 一次走查一份，证据随 commit / PR 归档；判据以 [../workflows/regression.md](../workflows/regression.md) §3（维度定义）、§4（能力域清单）、§7（证据命名）为准，此处不重复。
 
 **B1. 标题**：`RG — <scope> 回归走查报告` — commit <sha> · backlog <#n>
 
@@ -85,13 +85,13 @@
 
 | 维度 | 结果 |
 |------|------|
-| D0 | <> |
-| D1 | <> |
-| D2 | <> |
-| D3 | <> |
-| D4 | <> |
+| build | <> |
+| test | <> |
+| runtime | <> |
+| telemetry | <> |
+| human | <> |
 
-**B6. 证据清单**：相对路径列表，全部证据可追溯（证据链四环见 [../workflows/verify.md](../workflows/verify.md) §3）。
+**B6. 证据清单**：相对路径列表，全部证据可追溯（证据链四环见 [../workflows/evidence.md](../workflows/evidence.md) §6）。
 
 - <相对路径>
 
@@ -112,6 +112,6 @@
 
 - Bug 分析方法论（根因判定 / 补丁协议 / 系统性分析）：[../workflows/bug.md](../workflows/bug.md)
 - 质量保证方法论（交叉验证 / 证据链 / 可复现）：[../workflows/verify.md](../workflows/verify.md)
-- 回归验证指南（能力域 / D0-D4 / 证据命名）：[../workflows/regression.md](../workflows/regression.md)
+- 回归验证指南（能力域 / 命名维度 / 证据命名）：[../workflows/regression.md](../workflows/regression.md)
 - 完成验证总纲：[../workflows/verify.md](../workflows/verify.md)
 - 可观测性（取证手段 / 证据模板）：[../workflows/evidence.md](../workflows/evidence.md)
