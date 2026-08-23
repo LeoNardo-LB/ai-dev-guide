@@ -1,0 +1,14 @@
+# 系统产物
+*.bak
+__pycache__/
+*.pyc
+
+# 临时与演练
+/tmp/
+.playwright-mcp/
+
+# 编辑器
+.idea/
+.vscode/
+*.swp
+.DS_Store

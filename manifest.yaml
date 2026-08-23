@@ -1,0 +1,455 @@
+# ============================================================
+# ai-dev-guide v2.0 — 单一真相源清单（机器可读）
+# 本文件是全系统唯一的元数据中心：
+#   - AGENTS.md.template 索引表、README 目录树、system-design §结构 与裁剪表
+#     全部由 scripts/gen-index.py 从本文件生成（写入 <!-- GEN:... --> 标记段）
+#   - 增删/改级文档 = 改本文件一行 + 跑 scripts/gen-index.py + scripts/check.sh
+# 格式约束（check.sh 门禁 5 依赖）：两空格缩进；标量值；docs 条目以 "- id:" 起，
+#   其余字段缩进两格；列表值用 [a, b] 行内写法；字符串含 [ ] { } : 时加引号。
+# ============================================================
+
+system:
+  name: ai-dev-guide
+  version: 2.2.0
+  language: zh
+  description: 可整体复制到任意项目的渐进式披露 AI 开发文档系统
+  entry: AGENTS.md.template
+
+planes:
+  deployed: 复制进目标项目的文档平面（init.sh 按裁剪组复制）
+  source: 仅源仓维护的文档平面（治理/脚本/规格/决策，不随部署）
+
+defaults:
+  line_budget: 250
+  must_limit: 7
+  placeholder_exempt_dirs: [templates, stack, registries]
+  # 登记三分离（backlog/journal/spec）约定：见 specs/v2-rebuild.md 节 6
+  # backlog = 未决索引（完结即迁移，check.sh 门禁 9）
+  # journal = 批次执行与证据日志（开工时创建，append-only）
+  # spec    = 设计决策（active docs/specs/ → 验收后 docs/archive/specs/）
+
+# docs 条目字段：
+#   id           稳定标识（链接锚与 replaces 追溯用）
+#   path         相对仓库根的文件路径
+#   kind         content（内容文档）/ template（填空骨架）/ registry（实例骨架）
+#   plane        deployed / source
+#   level        MUST / SHOULD / MAY（进 AGENTS.md 索引表的级别）
+#   purpose      一句话用途（索引表"用途"列）
+#   use_when     触发场景（索引表 Use when 列；首词 = 触发动词）
+#   trim_group   core（永不裁剪）/ ui（无 UI 项目可删）/ stack-example（非该栈可删）/ registry
+#   indexed      是否进 AGENTS.md 索引表（registry 骨架为 false，实例化后成项目文件）
+#   budget       行数预算覆盖（缺省用 defaults.line_budget；超 250 须在此申报理由见注释）
+#   replaces     v1.1 溯源（迁移自哪些旧文件）
+
+docs:
+  - id: onboarding
+    path: bootstrap/onboarding.md
+    kind: content
+    plane: deployed
+    level: MAY
+    purpose: 新项目接入说明（init.sh 的人话版）
+    use_when: 新项目初始化时
+    trim_group: core
+    indexed: true
+    replaces: [00-bootstrap/onboarding.md]
+  - id: edit-card
+    path: meta/edit-card.md
+    kind: content
+    plane: deployed
+    level: MUST
+    purpose: 文档与 AGENTS 规则编辑卡（核心五律 + 指回源仓）
+    use_when: 修改任何文档或 AGENTS.md 规则前
+    trim_group: core
+    indexed: true
+    replaces: [01-meta/doc-writing-standards.md（部署面浓缩）]
+  - id: stack-profile
+    path: stack/stack-profile.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 栈档案：构建命令/版本真相源/平台约束唯一真相源
+    use_when: 不确定构建命令、依赖版本、目录约定时
+    trim_group: core
+    indexed: true
+    replaces: [02-stack/stack-profile.md]
+  - id: stack-example
+    path: stack/android-kotlin-example.md
+    kind: content
+    plane: deployed
+    level: MAY
+    purpose: 已填充栈档案范例（Kotlin/Android）
+    use_when: 参考栈档案填法时
+    trim_group: stack-example
+    indexed: true
+    replaces: [02-stack/android-kotlin-example.md]
+  - id: code-style
+    path: standards/code-style.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 代码风格、注释覆盖矩阵、AI 友好编码
+    use_when: 编写新代码、评审风格前
+    trim_group: core
+    indexed: true
+    replaces: [03-standards/code-style.md]
+  - id: architecture
+    path: standards/architecture.md
+    kind: content
+    plane: deployed
+    level: MUST
+    purpose: 架构规范：分层、承重规则、深度模块、不过度设计
+    use_when: 跨层改动、设计/修改模块接口前
+    trim_group: core
+    indexed: true
+    replaces: [03-standards/architecture.md]
+  - id: reliability
+    path: standards/reliability.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 可靠性：错误处理/并发/资源/日志/幂等
+    use_when: 涉及错误处理、并发、日志、边界时
+    trim_group: core
+    indexed: true
+    replaces: [03-standards/reliability.md]
+  - id: test-strategy
+    path: standards/test-strategy.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 测试策略、各层覆盖、Mock 纪律
+    use_when: 编写测试、决定层级与范围时
+    trim_group: core
+    indexed: true
+    replaces: [04-process/test-strategy.md]
+  - id: ui-conventions
+    path: standards/ui-conventions.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: UI 统一性：框架忠诚/设计令牌/状态展示/本地化
+    use_when: 编写/修改 UI 前
+    trim_group: ui
+    indexed: true
+    replaces: [06-ui/ui-conventions.md]
+  - id: dev
+    path: workflows/dev.md
+    kind: content
+    plane: deployed
+    level: MUST
+    purpose: 开发循环六步、编辑协议、提交规范、并行纪律
+    use_when: 任何代码编辑任务开始前
+    trim_group: core
+    indexed: true
+    replaces: [04-process/dev-workflow.md]
+  - id: verify
+    path: workflows/verify.md
+    kind: content
+    plane: deployed
+    level: MUST
+    purpose: 完成验证：五维证据、交叉验证、人工门禁
+    use_when: 声称任何任务完成前
+    trim_group: core
+    indexed: true
+    budget: 280
+    replaces: [04-process/verification.md, 04-process/qa-methodology.md, 06-ui/ui-verification.md]
+  - id: evidence
+    path: workflows/evidence.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 观测与取证：日志/数据直查/网络/UI dump/证据链
+    use_when: 调试、取证、验证运行时行为前
+    trim_group: core
+    indexed: true
+    replaces: [04-process/observability.md, 04-process/qa-methodology.md（证据链节）]
+  - id: regression
+    path: workflows/regression.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 回归验证：变更分类、性能基线、能力域、定性三问
+    use_when: 涉及已有能力的变更后
+    trim_group: core
+    indexed: true
+    replaces: [04-process/regression-guide.md]
+  - id: release
+    path: workflows/release.md
+    kind: content
+    plane: deployed
+    level: MUST
+    purpose: 发版权威：版本/构建/签名/CHANGELOG/回滚
+    use_when: 任何发版、版本号、tag、Release 操作前
+    trim_group: core
+    indexed: true
+    replaces: [04-process/release-workflow.md]
+  - id: requirements
+    path: workflows/requirements.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 需求全生命周期（优先级与状态机唯一归宿）
+    use_when: 接收新需求、澄清拆解、验收前
+    trim_group: core
+    indexed: true
+    replaces: [05-requirements/requirements-workflow.md, 05-requirements/backlog.md（纪律节）]
+  - id: bug
+    path: workflows/bug.md
+    kind: content
+    plane: deployed
+    level: MUST
+    purpose: Bug 分析：根治优先、补丁协议、反模式、模式审计
+    use_when: 诊断或修复任何 bug 前
+    trim_group: core
+    indexed: true
+    replaces: [07-quality/bug-analysis.md]
+  - id: debt
+    path: workflows/debt.md
+    kind: content
+    plane: deployed
+    level: SHOULD
+    purpose: 技术债务登记纪律、偿还流程、grep 检查
+    use_when: 登记/偿还技术债时
+    trim_group: core
+    indexed: true
+    replaces: [07-quality/tech-debt.md]
+  - id: t-backlog-entry
+    path: templates/backlog-entry.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 待办卡片格式（≤3 行索引卡 + 机械不变量）
+    use_when: 登记待办前
+    trim_group: core
+    indexed: true
+    replaces: [05-requirements/backlog.md（条目格式节）]
+  - id: t-journal-entry
+    path: templates/journal-entry.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 批次日志骨架（开工时创建；证据 append-only 归宿）
+    use_when: 开启新工作批次时
+    trim_group: core
+    indexed: true
+    replaces: []（oc-beacon docs/journal 实践提炼）
+  - id: t-context
+    path: templates/context.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 项目领域术语表骨架（CONTEXT.md，定义+Avoid）
+    use_when: 初始化项目术语表、统一领域用语时
+    trim_group: core
+    indexed: true
+    replaces: []（oc-beacon CONTEXT.md 实践提炼）
+  - id: t-requirement
+    path: templates/requirement.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 需求澄清卡（验收标准先行）
+    use_when: 澄清需求、展开规格时
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/requirement-template.md]
+  - id: t-spec
+    path: templates/spec.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 设计文档骨架（事实/推论分离防幻觉；active→archive 生命周期）
+    use_when: 大改动设计前
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/spec.md]
+  - id: t-plan
+    path: templates/plan.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 实施计划骨架（Task/Steps/精确签名/TDD）
+    use_when: 大改动实施前
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/plan.md]
+  - id: t-bug-record
+    path: templates/bug-record.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: Bug 修复记录（三层分类 + 判定三问结论）
+    use_when: 修复完成随 commit 附记录时
+    trim_group: core
+    indexed: true
+    replaces: [07-quality/bug-analysis.md §10]
+  - id: t-debt-entry
+    path: templates/debt-entry.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 债务条目格式（状态词表唯一归宿）
+    use_when: 登记债务时
+    trim_group: core
+    indexed: true
+    replaces: [07-quality/tech-debt.md §3, 08-templates/architecture-debt.md]
+  - id: t-ability-domains
+    path: templates/ability-domains.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 能力域清单骨架（四件套 + 维护规则）
+    use_when: 建立/维护能力域清单时
+    trim_group: core
+    indexed: true
+    replaces: [04-process/regression-guide.md §4]
+  - id: t-ui-checklist
+    path: templates/manual-ui-checklist.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 人工验证清单（时间性现象）
+    use_when: UI 涉及动画/闪烁/计时类现象时
+    trim_group: ui
+    indexed: true
+    replaces: [06-ui/ui-verification.md §2]
+  - id: t-verify-node
+    path: templates/verification-node.md
+    kind: template
+    plane: deployed
+    level: MAY
+    purpose: 验证节点（环境/步骤/断言/证据可复现清单）
+    use_when: 组织多步验证证据时
+    trim_group: core
+    indexed: true
+    replaces: [04-process/qa-methodology.md §4.1]
+  - id: t-research-report
+    path: templates/research-report.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 调查报告 A / 回归报告 B
+    use_when: bug 深挖、回归走查输出时
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/research-report.md]
+  - id: t-e2e-plan
+    path: templates/e2e-plan.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: E2E 期望文档（测什么/期望什么）
+    use_when: 大型 E2E 测试设计时
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/e2e-test-plan-and-runbook.md Part A]
+  - id: t-e2e-runbook
+    path: templates/e2e-runbook.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: E2E 实操记录（逐轮追加/差异归属）
+    use_when: 执行 E2E 测试时
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/e2e-test-plan-and-runbook.md Part B]
+  - id: t-adr
+    path: templates/adr.md
+    kind: template
+    plane: deployed
+    level: MAY
+    purpose: 架构决策记录骨架
+    use_when: 记录架构决策时
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/adr-template.md]
+  - id: t-changelog
+    path: templates/changelog.md
+    kind: template
+    plane: deployed
+    level: MAY
+    purpose: CHANGELOG 骨架（Keep a Changelog）
+    use_when: 更新 CHANGELOG 时
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/changelog-template.md]
+  - id: t-release-notes
+    path: templates/release-notes.md
+    kind: template
+    plane: deployed
+    level: SHOULD
+    purpose: 发版说明骨架（面向用户公告）
+    use_when: 撰写发版说明时
+    trim_group: core
+    indexed: true
+    replaces: [08-templates/release-notes-template.md]
+  - id: t-release-runbook
+    path: templates/release-runbook.md
+    kind: template
+    plane: deployed
+    level: MAY
+    purpose: 手动发版步骤（发版脚本不可用时逐项执行）
+    use_when: 手动发版时
+    trim_group: core
+    indexed: true
+    replaces: [04-process/release-workflow.md §8]
+  - id: r-backlog
+    path: registries/backlog.md
+    kind: registry
+    plane: deployed
+    level: SHOULD
+    purpose: 待办登记簿实例骨架（未决索引+完结即迁移；init 复制到项目根 backlog.md）
+    use_when: 初始化待办登记簿时
+    trim_group: registry
+    indexed: false
+    replaces: [05-requirements/backlog.md]
+  - id: r-ability-domains
+    path: registries/ability-domains.md
+    kind: registry
+    plane: deployed
+    level: SHOULD
+    purpose: 能力域清单实例骨架（init 复制到 docs/ability-domains.md）
+    use_when: 初始化能力域清单时
+    trim_group: registry
+    indexed: false
+    replaces: [04-process/regression-guide.md §4.3 骨架]
+  - id: r-architecture-debt
+    path: registries/architecture-debt.md
+    kind: registry
+    plane: deployed
+    level: SHOULD
+    purpose: 架构债务登记簿实例骨架（init 复制到 docs/architecture-debt.md）
+    use_when: 初始化债务登记簿时
+    trim_group: registry
+    indexed: false
+    replaces: [08-templates/architecture-debt.md]
+  - id: system-design
+    path: meta/system-design.md
+    kind: content
+    plane: source
+    level: MAY
+    purpose: 本系统设计规范、术语表与生成索引总表
+    use_when: 理解/修改本系统结构时
+    trim_group: core
+    indexed: false
+    replaces: [01-meta/system-design.md]
+  - id: doc-governance
+    path: meta/doc-governance.md
+    kind: content
+    plane: source
+    level: SHOULD
+    purpose: 文档治理：类型/存放决策/生命周期/门禁映射
+    use_when: 维护、审查、重组本系统时
+    trim_group: core
+    indexed: false
+    replaces: [01-meta/doc-governance.md]
+  - id: doc-writing-standards
+    path: meta/doc-writing-standards.md
+    kind: content
+    plane: source
+    level: MUST
+    purpose: 面向 Agent 的写作规范（指针/分层/十律/泄漏分类）
+    use_when: 修改本系统任何文档前（源仓）
+    trim_group: core
+    indexed: false
+    replaces: [01-meta/doc-writing-standards.md]
