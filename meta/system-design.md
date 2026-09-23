@@ -24,7 +24,7 @@
 | deployed | 内容文档（standards/workflows/bootstrap）+ 栈档案 + 模板 + 登记簿骨架 + 编辑卡 | 复制进目标项目 |
 | source | meta/ 治理三份 + 治理脚本（init/upgrade/gen-index/selftest）+ manifest + specs + docs | 只留源仓（运行时五脚本随部署） |
 
-目标项目里修改文档的纪律由部署面的 [edit-card.md](./edit-card.md)（编辑卡）承载；完整治理规范按需从源仓复制。
+目标项目里修改文档的纪律由部署面的 [edit-card.md](./edit-card.md)（编辑卡）承载；完整治理规范按需从源仓复制。源仓自身的 AI 协作入口是仓库根 [AGENTS.md](../AGENTS.md)（source 平面：先读索引、本仓铁律与常用命令）；部署到目标项目的入口由 AGENTS.md.template 实例化。
 
 ## 3. 三层渐进披露
 
@@ -100,6 +100,7 @@
 | release | workflows/release.md | content | deployed | MUST | core | 发版权威：版本/构建/签名/CHANGELOG/回滚 | 任何发版、版本号、tag、Release 操作前 |
 | requirements | workflows/requirements.md | content | deployed | SHOULD | core | 需求全生命周期（优先级与状态机唯一归宿） | 接收新需求、澄清拆解、验收前 |
 | verify | workflows/verify.md | content | deployed | MUST | core | 完成验证：五维证据、交叉验证、人工门禁 | 声称任何任务完成前 |
+| agents-source | AGENTS.md | content | source | MUST | core | 源仓 AI 协作入口（先读索引、本仓铁律、常用命令） | 在本源仓内做任何修改前 |
 | doc-governance | meta/doc-governance.md | content | source | SHOULD | core | 文档治理：类型/存放决策/生命周期/门禁映射 | 维护、审查、重组本系统时 |
 | doc-writing-standards | meta/doc-writing-standards.md | content | source | MUST | core | 面向 Agent 的写作规范（指针/分层/十律/泄漏分类） | 修改本系统任何文档前（源仓） |
 | system-design | meta/system-design.md | content | source | MAY | core | 本系统设计规范、术语表与生成索引总表 | 理解/修改本系统结构时 |

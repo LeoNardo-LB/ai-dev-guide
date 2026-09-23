@@ -4,7 +4,7 @@
 
 ## 文档索引（先查这里）
 
-> ⚠️ **修改任何文档或规则前，先读 [{{SYS}}/meta/edit-card.md]({{SYS}}/meta/edit-card.md) 编辑五律**（命题保全/单一真相源/现在时态/指针三要素/同 commit 更新）。
+> ⚠️ **修改任何文档或规则前，先读 [{{SYS}}/meta/edit-card.md]({{SYS}}/meta/edit-card.md) 编辑卡**（编辑五律 + 补律：措辞冻结、首尾承重）。
 > 级别语义：🔴 MUST = 该场景下先读再行动 · 🟡 SHOULD = 推荐，跳过需理解后果 · 🟢 MAY = 可选背景。MUST 数量受控，避免「都重要 = 都不重要」。
 
 <!-- GEN:agents-index:start -->

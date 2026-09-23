@@ -1,14 +1,15 @@
 # ai-dev-guide
 
-> 一套可**整体部署**到任意新项目的渐进式披露 AI 开发文档系统：以项目根 AGENTS.md 为唯一入口，把「AI 开发一个应用」所需的规范、流程、方法论、模板组织成按需加载的文档树。
+> 一套可**整体部署**到任意新项目的渐进式披露 AI 开发文档系统：以项目根 AGENTS.md 为唯一入口，把「AI 开发一个应用」所需的规范、流程、方法论、模板组织成按需加载的文档树；十项机器门禁 + 回归自检保证体系始终自洽。
 
 ## 快速开始
 
-```
-./scripts/init.sh <目标项目根> [--dir 系统目录名] [--no-ui] [--no-example]
+```bash
+git clone https://github.com/LeoNardo-LB/ai-dev-guide.git
+./ai-dev-guide/scripts/init.sh <目标项目根> [--dir 系统目录名] [--no-ui] [--no-example]
 ```
 
-脚本完成：按裁剪组复制部署平面 → 生成 AGENTS.md（索引实例化）→ 实例化 backlog/CONTEXT/能力域/债务登记簿 → 建登记目录 → 跑部署门禁 → 写部署基线 → 报告待补占位符。人工只剩：补栈事实、写首批术语、登记承重红线。
+脚本完成：按裁剪组复制部署平面 → 生成 AGENTS.md（索引实例化）→ 实例化 backlog/CONTEXT/能力域/债务登记簿/环境 runbook 骨架 → 建登记目录（journal/specs/acceptance）→ 跑部署门禁 → 写部署基线 → 报告待补占位符。人工只剩：补栈事实、写首批术语、登记承重红线。
 
 ## 设计原则
 
@@ -16,17 +17,17 @@
 |---|------|----------|
 | 1 | 指针不是百科 | AGENTS.md 只放索引与红线；知识本体按 Use when 触发加载 |
 | 2 | manifest 单源 | 索引/目录树/裁剪表全部由 scripts/gen-index.py 生成，手工副本为零 |
-| 3 | 每条机械规则配门禁 | scripts/check.sh 十项门禁（链接/预算/占位符/MUST/幂等/引用/归宿/词汇/登记簿/命名） |
-| 4 | 栈无关 | 语言差异隔离在 stack/；命令符号（BUILD/TEST/RUN）唯一定义于栈档案 |
+| 3 | 每条机械规则配门禁 | scripts/check.sh 十项门禁（结构/链接/预算/占位符/MUST 稀缺/幂等/§引用/唯一归宿/词汇/登记簿/命名） |
+| 4 | 栈无关 | 语言差异隔离在 stack/；六个命令符号 BUILD/TEST/RUN/LOG/DUMP/SHOT 唯一定义于栈档案 |
 | 5 | 登记三分离 | backlog 未决索引（完结即迁移）/ journal 批次证据（append-only）/ spec 设计决策（active→archive） |
-| 6 | 自举 | 系统用自己的模板管理自己（CHANGELOG/ADR/journal） |
+| 6 | 自举 | 系统用自己的模板与门禁管理自己（CHANGELOG/ADR/journal/源仓根 AGENTS.md） |
 
 ## 双平面模型
 
 | 平面 | 内容 | 去向 |
 |------|------|------|
 | deployed | standards + workflows + bootstrap + stack + templates + registries + meta/edit-card | 复制进目标项目 |
-| source | meta 三份治理文档 + 治理脚本（init/upgrade/gen-index/selftest）+ manifest + specs + docs | 仅源仓（运行时五脚本随部署） |
+| source | meta 治理文档 + 仓库根 AGENTS.md + 治理脚本（init/upgrade/gen-index/selftest）+ manifest + specs + docs | 仅源仓（运行时五脚本 check·new-batch·backlog·release-version·scan-secrets 随部署） |
 
 ## 文档总览（manifest 生成）
 
@@ -75,6 +76,7 @@
 | deployed | `workflows/release.md` | 🔴 | 发版权威：版本/构建/签名/CHANGELOG/回滚 |
 | deployed | `workflows/requirements.md` | 🟡 | 需求全生命周期（优先级与状态机唯一归宿） |
 | deployed | `workflows/verify.md` | 🔴 | 完成验证：五维证据、交叉验证、人工门禁 |
+| source | `AGENTS.md` | 🔴 | 源仓 AI 协作入口（先读索引、本仓铁律、常用命令） |
 | source | `meta/doc-governance.md` | 🟡 | 文档治理：类型/存放决策/生命周期/门禁映射 |
 | source | `meta/doc-writing-standards.md` | 🔴 | 面向 Agent 的写作规范（指针/分层/十律/泄漏分类） |
 | source | `meta/system-design.md` | 🟢 | 本系统设计规范、术语表与生成索引总表 |
@@ -84,9 +86,12 @@
 
 | 想做什么 | 用什么 |
 |----------|--------|
+| 在本仓内改文档/脚本（AI 协作） | 根 [AGENTS.md](AGENTS.md)：先读索引 + 本仓铁律 + 常用命令 |
 | 新增/修改文档 | 改 manifest.yaml → 跑 scripts/gen-index.py → 按规范撰写 → scripts/check.sh |
 | 部署到新项目 | scripts/init.sh |
-| 管理版本相位（dev.n → beta → 正式版） | scripts/release-version.sh |
+| 管理部署项目的待办账本 | scripts/backlog.sh（add/show/note/status/prio/migrate；卡片区禁手工直编） |
+| 敏感信息扫描 | scripts/scan-secrets.sh（白名单 scan-secrets.allow） |
+| 管理版本相位（部署面项目 dev.n → beta → 正式版） | scripts/release-version.sh；本仓自身走 manifest + tag 单轨（workflows/release.md §2.1） |
 | 推送前自检（CI 同命令） | scripts/selftest.sh |
 | 升级已部署项目 | scripts/upgrade.sh（漂移报告） |
 | 登记开发批次 | scripts/new-batch.sh |
@@ -94,7 +99,7 @@
 
 ## 版本历史
 
-见 [CHANGELOG.md](CHANGELOG.md)（用本系统自己的 changelog 模板维护）。
+见 [CHANGELOG.md](CHANGELOG.md)（用本系统自己的 changelog 模板维护）；发布归档见 [Releases](https://github.com/LeoNardo-LB/ai-dev-guide/releases)。
 
 ## 许可
 

@@ -193,7 +193,10 @@ def gate_sections():
                     for wm in re.finditer(r"([\w-]+)\s+第\s?\d", line):
                         hits = [h for h in glob.glob("**/" + wm.group(1) + ".md", recursive=True) if not hist_exempt(h)]
                         if len(hits) == 1: cands.append(hits[0]); break
-                cands = [c for c in cands if os.path.exists(c)] or [f]
+                # 自身文件作末位候选：裸 §N 在本仓惯例指向本文（如 architecture.md 提及 AGENTS.md 字样时的本文 §2）——
+                # 源仓根 AGENTS.md 落地后「行内文件名提及」首次可命中，显式候选不含本文时不得劫持裸引用（v2.6.1 定规）
+                cands = [c for c in cands if os.path.exists(c)]
+                if f not in cands: cands.append(f)
                 sec_full = m.group(1) or m.group(2)
                 sec_top = sec_full.split(".")[0]
                 ok_any = False

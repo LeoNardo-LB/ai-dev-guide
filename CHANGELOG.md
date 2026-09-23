@@ -2,6 +2,18 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.6.1] - 2026-09-23
+
+### Added
+
+- 源仓自举入口补齐：仓库根 AGENTS.md（source 平面，manifest 申报纳管预算与门禁）——先读索引、本仓铁律六条（manifest 单源/提交前全绿/现在时态/版本单轨/批次留痕/术语先入表）、常用命令、改脚本=改门禁；源仓与部署面自此同为「根 AGENTS.md 入口」形态
+- README 重写为公开仓形态：快速开始补 clone 步骤与部署产物清单（环境 runbook 骨架、acceptance 登记目录）；维护入口补 backlog.sh（含 prio）/scan-secrets.sh/源仓 AGENTS.md 三行与发布归档链接；meta/system-design.md §2 补源仓入口与部署面入口关系一句
+
+### Fixed
+
+- README 设计原则 4 口径滞后：仍写三命令符号，实为六符号（BUILD/TEST/RUN/LOG/DUMP/SHOT）
+- AGENTS.md.template 首屏警告行与编辑卡内容漂移：五律逐条枚举未含 v2.6.0 新增补律（措辞冻结/首尾承重），改为指针式指回编辑卡
+
 ## [2.6.0] - 2026-09-23
 
 系统审计修复批次：8 路子代理分维审计 + 2025-2026 实证研究对照（5 篇 arXiv 论文 + 6 权威实践源），P0×9 全修、P1 主体落地。审计全文见 docs/research/2026-09-23-system-audit.md。
