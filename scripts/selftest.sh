@@ -71,7 +71,8 @@ if [ "$QUICK" = 0 ]; then
 
   # R5 [v2.4.0]：全新部署（零人工修改）upgrade.sh 不得报告「本地化修改」
   bash scripts/upgrade.sh "$(pwd)" "$D" ai-dev-guide > "$TMP/up.log" 2>&1
-  if grep -q '本地化修改 0' "$TMP/up.log"; then
+  # [v2.7.0] 升级模块分级词表：旧「本地化修改 0」→「可安全同步 0 + 双方修改 0」（R15 定规）
+  if grep -q '可安全同步 0' "$TMP/up.log" && grep -q '双方修改.须合并. 0' "$TMP/up.log"; then
     echo '  ✓ R5 全新部署零本地化误报（部署基线生效）'
   else
     echo '  ✗ R5 全新部署被误报本地化修改'; grep -E '本地化|一致' "$TMP/up.log" | head -2; FAIL=1
@@ -168,6 +169,43 @@ if [ "$QUICK" = 0 ]; then
   if [ $? -eq 2 ] && grep -q '需要值' /tmp/r14.txt; then echo '  ✓ R14d --bump 缺值干净拒绝（exit 2）'; else echo '  ✗ R14d --bump 缺值裸崩'; FAIL=1; fi
   printf 'VERSION_NAME=1.0.0-dev.5\nVERSION_CODE=5\nDEV_CYCLE=2\n' > "$TMP/rv3"
   bash $RV "$TMP/rv3" beta >/dev/null 2>&1 && { echo '  ✗ R14e 脏文件迁移被放行（版本号会倒退）'; FAIL=1; } || echo '  ✓ R14e DC/序号不一致迁移被拒'
+
+  # R15 [v2.7.0]：升级模块（apply 分级执行 / merge 三方工件 / baseline 门禁守卫 / 本地内容保护）
+  US="$TMP/upsrc"; UT="$TMP/uptgt"
+  cp -r "$(pwd)" "$US" >/dev/null 2>&1
+  bash "$US/scripts/init.sh" "$UT" >/dev/null 2>&1
+  bash "$US/scripts/upgrade.sh" "$US" "$UT" >/dev/null 2>&1
+  [ $? -eq 0 ] && echo '  ✓ R15a 默认子命令=report（exit 0）' || { echo '  ✗ R15a 默认子命令崩溃'; FAIL=1; }
+  printf '\n上游演进（R15）。\n' >> "$US/workflows/dev.md"
+  printf '\n上游演进 verify（R15）。\n' >> "$US/workflows/verify.md"
+  printf '\n本地内容（R15）。\n' >> "$UT/ai-dev-guide/workflows/verify.md"
+  bash "$US/scripts/upgrade.sh" "$US" "$UT" apply >/dev/null 2>&1
+  if grep -q '上游演进（R15）' "$UT/ai-dev-guide/workflows/dev.md" \
+     && grep -q '本地内容（R15）' "$UT/ai-dev-guide/workflows/verify.md" \
+     && ! grep -q '上游演进 verify' "$UT/ai-dev-guide/workflows/verify.md"; then
+    echo '  ✓ R15b apply 分级执行（安全项同步 + 本地内容零丢失）'
+  else
+    echo '  ✗ R15b apply 分级失败'; FAIL=1
+  fi
+  bash "$US/scripts/upgrade.sh" "$US" "$UT" merge >/dev/null 2>&1
+  if [ -f "$UT/ai-dev-guide/.upgrade-merge/ai-dev-guide/workflows/verify.md.yours" ] \
+     && [ -f "$UT/ai-dev-guide/.upgrade-merge/ai-dev-guide/workflows/verify.md.theirs" ]; then
+    echo '  ✓ R15c merge 三方工件生成'
+  else
+    echo '  ✗ R15c merge 工件缺失'; FAIL=1
+  fi
+  printf -- '- [X] **#9998 影子**\n' >> "$UT/backlog.md"
+  bash "$US/scripts/upgrade.sh" "$US" "$UT" baseline >/dev/null 2>&1
+  [ $? -ne 0 ] && echo '  ✓ R15d baseline 门禁红时拒绝刷新' || { echo '  ✗ R15d 把破坏刷进基线'; FAIL=1; }
+  bash "$US/scripts/upgrade.sh" "$US" "$UT" ai-dev-guide hack >/dev/null 2>&1
+  [ $? -eq 2 ] && echo '  ✓ R15e 未知子命令被拒（exit 2）' || { echo '  ✗ R15e 未知子命令放行'; FAIL=1; }
+  printf '\n用户规则行R15\n' >> "$UT/AGENTS.md"
+  bash "$US/scripts/upgrade.sh" "$US" "$UT" apply >/dev/null 2>&1
+  if grep -q '用户规则行R15' "$UT/AGENTS.md"; then
+    echo '  ✓ R15f 用户改过的 AGENTS.md 不被 apply 覆盖'
+  else
+    echo '  ✗ R15f 用户 AGENTS.md 被覆盖'; FAIL=1
+  fi
 
   rm -rf "$TMP"
 

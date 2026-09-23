@@ -93,7 +93,7 @@ git clone https://github.com/LeoNardo-LB/ai-dev-guide.git
 | 敏感信息扫描 | scripts/scan-secrets.sh（白名单 scan-secrets.allow） |
 | 管理版本相位（部署面项目 dev.n → beta → 正式版） | scripts/release-version.sh；本仓自身走 manifest + tag 单轨（workflows/release.md §2.1） |
 | 推送前自检（CI 同命令） | scripts/selftest.sh |
-| 升级已部署项目 | scripts/upgrade.sh（漂移报告） |
+| 升级已部署项目 | scripts/upgrade.sh（report 漂移报告 / apply 分级同步 / merge 三方合并 / baseline 刷新基准） |
 | 登记开发批次 | scripts/new-batch.sh |
 | 理解系统设计 | meta/system-design.md（含术语表） |
 

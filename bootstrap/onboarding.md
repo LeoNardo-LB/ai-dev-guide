@@ -38,13 +38,26 @@ init.sh 选项：--dir 系统目录名（默认 ai-dev-guide）· --no-ui（无 
 | 4 | 占位符残留清单已知（补填后归零） | init.sh 输出报告 |
 | 5 | AGENTS.md 行数 ≤200、MUST ≤7 | 人工扫一眼 |
 
-## 4. 上游升级
+## 4. 上游升级（分级执行，拒绝全量覆盖）
 
 ```
-./scripts/upgrade.sh 本仓库根 目标项目根 系统目录名   # 在本源仓运行
+./scripts/upgrade.sh 本仓库根 目标项目根 [系统目录名] report    # ① 漂移报告（默认，不改文件）
+./scripts/upgrade.sh 本仓库根 目标项目根 apply               # ② 只同步可证明安全项
+./scripts/upgrade.sh 本仓库根 目标项目根 merge               # ③ 双方修改 → 三方工件
+./scripts/upgrade.sh 本仓库根 目标项目根 baseline            # ④ 合并完成、门禁绿后刷新基准
 ```
 
-输出逐文件漂移分类（一致/可直接覆盖/本地化修改/上游有-部署缺/本地新增）+ 建议动作；比对基准是部署时写下的 `.deploy-baseline.txt`（区分「用户本地化修改」与「上游更新」）；只报告不自动覆盖——本地化修改需人工合并。
+比对基准是部署时写下的 `.deploy-baseline.txt`（形态哈希 + 部署档案：裁剪开关与上游版本）。每个文件按「本地 vs 基线 vs 上游」三方状态自动分级：
+
+| 分级 | 判定 | 动作 |
+|------|------|------|
+| 可安全同步 | 本地==基线（未动过）且上游已变 | `apply` 自动覆盖并增量刷新基线 |
+| 上游新增 | 上游 manifest 新增且非当初裁剪组 | `apply` 自动补齐 |
+| 双方修改 | 本地与上游都动过 | `merge` 落 `.upgrade-merge/` 三方工件（base 取上游对应版本 git tag；有 git 另出 merged 合并稿），人工/agent 合并后 `baseline` 刷新 |
+| 已合并保留 | 基线含 #merged 标记（本地内容已入基线） | apply 永不覆盖；上游再演进时重新 merge |
+| 本地领先 / 当初裁剪 / 上游已删除 / 本地新增 | — | 保留或按报告建议处理 |
+
+红线：`apply` 绝不触碰本地化修改与根级实例（AGENTS.md / backlog.md / CONTEXT.md）；`baseline` 在部署门禁未过时拒绝刷新（防把破坏登记为基准）。
 
 ## 5. FAQ
 

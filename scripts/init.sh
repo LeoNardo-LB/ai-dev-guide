@@ -84,41 +84,20 @@ echo "✓ 复制运行时脚本 → $SYSNAME/scripts/（check / new-batch / back
 
 # 2. 生成 AGENTS.md
 if [ -f "$TARGET/AGENTS.md" ]; then
-  echo "⚠ 目标已有 AGENTS.md——生成到 AGENTS.md.new 供人工合并"
-  OUT="$TARGET/AGENTS.md.new"
+  if [ -f "$TARGET/AGENTS.md.new" ]; then
+    echo "⚠ 已存在 AGENTS.md.new（可能是你正在合并的草稿）——本次保留不覆盖；合并完成或删除后重跑 init 可重新生成"
+    SKIP_AGENTS=1
+  else
+    echo "⚠ 目标已有 AGENTS.md——生成到 AGENTS.md.new 供人工合并"
+    OUT="$TARGET/AGENTS.md.new"
+  fi
 else
   OUT="$TARGET/AGENTS.md"
 fi
-python3 - "$SRC" "$OUT" "$SYSNAME" "$NO_UI" "$NO_EX" <<'PYEOF'
-import sys, os, re
-src, out, sysname, no_ui, no_ex = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]=='1', sys.argv[5]=='1'
-ns = {}
-gsrc = open(os.path.join(src, 'scripts/gen-index.py'), encoding='utf-8').read().replace('if __name__ == "__main__":', 'if False:')
-ns['__file__'] = os.path.join(src, 'scripts', 'gen-index.py')
-exec(compile(gsrc, 'gi', 'exec'), ns)
-data = ns['load']()
-tpl = open(os.path.join(src, 'AGENTS.md.template'), encoding='utf-8').read()
-tpl = tpl.replace('{{SYS}}', sysname)
-icon = {'MUST':'🔴','SHOULD':'🟡','MAY':'🟢'}
-order = {'MUST':0,'SHOULD':1,'MAY':2}
-rows = ['| 级别 | 文档 | 用途 | Use when |','|------|------|------|----------|']
-for d in sorted([d for d in data['docs'] if d['plane']=='deployed' and d['indexed'] in ('true',True)], key=lambda d:(order[d['level']], d['path'])):
-    g = d['trim_group']
-    if g=='ui' and no_ui: continue
-    if g=='stack-example' and no_ex: continue
-    p = d['path']
-    rows.append(f"| {icon[d['level']]} {d['level']} | [{sysname}/{p}]({sysname}/{p}) | {d['purpose']} | {d['use_when']} |")
-pat = re.compile(r'<!-- GEN:agents-index:start -->.*?<!-- GEN:agents-index:end -->', re.S)
-tpl = pat.sub('<!-- GEN:agents-index:start -->\n' + '\n'.join(rows) + '\n<!-- GEN:agents-index:end -->', tpl, count=1)
-# 裁剪组文档的手写引用行一并剔除（如「其他」节的 ui-conventions 条目）——防纯文本路径与 §引用残留（2026-09-23 沙盒审计定规）
-if no_ui or no_ex:
-    dropped = [d['path'] for d in data['docs']
-               if (d['trim_group'] == 'ui' and no_ui) or (d['trim_group'] == 'stack-example' and no_ex)]
-    tpl = '\n'.join(l for l in tpl.split('\n')
-                    if not any((sysname + '/' + p) in l for p in dropped))
-open(out, 'w', encoding='utf-8').write(tpl)
-print(f'✓ 生成 {out}')
-PYEOF
+if [ "${SKIP_AGENTS:-0}" != 1 ]; then
+  python3 "$HERE/_gen_agents.py" "$SRC" "$OUT" "$SYSNAME" "$NO_UI" "$NO_EX"
+  echo "✓ 生成 $OUT"
+fi
 
 # 3. 实例化登记簿与术语表（幂等：已存在则保留用户内容）
 for PAIR in "registries/backlog.md backlog.md" "templates/context.md CONTEXT.md" \
@@ -163,6 +142,9 @@ python3 "$HERE/_scrub_links.py" "$DEST" "$OUT" "$TARGET/CONTEXT.md" "$TARGET/bac
 #     区分「用户本地化修改」与「上游更新」；重新部署会刷新基线。
 BASELINE="$DEST/.deploy-baseline.txt"
 : > "$BASELINE"
+# 部署档案（baseline v2）：升级模块据此区分「当初裁剪 vs 上游新增」，并取 v<version> tag 作三方合并基线
+UPV=$(grep -m1 '^  version:' "$SRC/manifest.yaml" | sed 's/[^:]*: *//')
+echo "# profile sysname=$SYSNAME no_ui=$NO_UI no_ex=$NO_EX version=$UPV" >> "$BASELINE"
 HASH() { # sha256 兼容 macOS（shasum 回退；失败即中止——防静默写坏基线，2026-09-23 审计 U-P0-2）
   if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1"
   elif command -v shasum >/dev/null 2>&1; then shasum -a 256 "$1"
@@ -173,7 +155,11 @@ record() { # $1=相对目标根的路径
   echo "$(HASH "$TARGET/$1" | cut -d' ' -f1)  $1" >> "$BASELINE"
 }
 ( cd "$TARGET" && find "$SYSNAME" \( -name '*.md' -o -name '*.sh' -o -name '*.py' \) | sort ) | while read -r rel; do
-  echo "$(HASH "$TARGET/$rel" | cut -d' ' -f1)  $rel" >> "$BASELINE"
+  # 双哈希：部署态（清洗后）+ 源态（源仓原文）——升级模块据此区分「部署变换差异」与「上游真演进」（R5 定规）
+  SRC_REL="${rel#"$SYSNAME"/}"
+  NOTE=""
+  [ -f "$SRC/$SRC_REL" ] && NOTE="  #src=$(HASH "$SRC/$SRC_REL" | cut -d' ' -f1)"
+  echo "$(HASH "$TARGET/$rel" | cut -d' ' -f1)  $rel$NOTE" >> "$BASELINE"
 done
 case "$OUT" in
   "$TARGET/AGENTS.md")     record "AGENTS.md" ;;

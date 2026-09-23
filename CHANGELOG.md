@@ -2,6 +2,22 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.7.0] - 2026-09-23
+
+### Added
+
+- **升级模块**：upgrade.sh 从「只报告」升级为分级执行——全量重覆盖永远不做。按「本地 vs 基线 vs 上游」三方状态自动分级：`apply` 只同步可证明安全项（本地==基线且上游已变 + 上游新增且非当初裁剪组），绝不触碰本地化修改与根级实例；`merge` 为双方修改文件落 `.upgrade-merge/` 三方工件（base 取上游 v<部署版本> git tag，有 git 另出 merged 合并稿）；`baseline` 在部署门禁通过后把当前形态登记为新基准。默认无子命令 = 原 report 行为，完全向后兼容
+- **部署档案（baseline v2）**：init.sh 基线新增 profile 头（sysname / no_ui / no_ex / version）——升级模块据此区分「上游新增 vs 当初裁剪」并定位三方合并基线；旧版基线无档案自动退化兼容
+- **已合并保留分级**：baseline 刷新时给「与上游不一致」的文件打 #merged 保护标记——人工合并稿含未入上游的本地内容，apply 永不覆盖（E2E 发现的覆盖事故缺口）
+- 三方分级新增两类语义：「本地领先（上游未动）」不再误报待合并；「已合并保留」明确 apply 豁免
+- bootstrap/onboarding.md 第 4 节重写为四级升级流程（report → apply → merge → baseline）+ 分级表；README 维护入口同步
+- selftest R15（a-e）：默认子命令 / apply 分级执行与本地内容零丢失 / merge 工件 / baseline 门禁红拒绝刷新 / 子命令防呆
+- **跨版本真实矩阵验证**（git worktree 检出真 v2.6.2/v2.6.3 tag 部署 → 升级到本版，11/11 全绿）：运行时脚本纳入升级分类（check/_gates/backlog/scan-secrets 等 8 件，与 init 复制清单同步）；AGENTS 入口重建（未被本地修改→直接生效，改过→AGENTS.md.new 人工合并）；旧基线裁剪事实从部署现状推断保留；apply 清洗扩为全系统目录幂等重洗（旧版 §N 残留等变换债一并修复）；AGENTS 生成器抽为 _gen_agents.py（init 与 upgrade 共用）
+
+### Fixed
+
+- apply 基线刷新从全量重写改为**增量**——全量重写会把本地化修改洗进基线，令其被下一次 apply 覆盖（E2E 定规）
+
 ## [2.6.3] - 2026-09-23
 
 全脚本沙盒穷举审计（主测矩阵 + 三路子代理外围矩阵），修复 23 处缺陷并新增 R13/R14 十四条回归断言。
