@@ -27,6 +27,14 @@ def process(f):
             return text
         return m.group(0)
     new = re.sub(r'\[([^\]]+)\]\(([^)]+\.md)\)', sub, txt)
+    # 悬空路径的 §N 残留一并清洗：目标文件不存在的「path.md §N」去掉 §N（洗链接不洗节号曾令部署门禁 6 必挂——2026-09-23 定规）
+    def strip_sec(m):
+        p = os.path.normpath(os.path.join(base, m.group(1)))
+        if os.path.exists(p):
+            return m.group(0)
+        changed.append(1)
+        return m.group(1)
+    new = re.sub(r'([\w./-]+\.md)[ \t]*(§\d+(?:\.\d+)?)', strip_sec, new)
     if changed:
         scrubbed += len(changed)
         open(f, 'w', encoding='utf-8').write(new)

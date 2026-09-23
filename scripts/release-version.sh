@@ -31,7 +31,8 @@ shift 2 || true
 while [ $# -gt 0 ]; do
   case "$1" in
     --dry-run) DRY=1; shift ;;
-    --bump) BUMP="$2"; shift 2 ;;
+    --bump) [ $# -ge 2 ] || { echo "✗ --bump 需要值 <major|minor|patch>"; exit 2; }
+            BUMP="$2"; shift 2 ;;
     *) [ -z "$EXTRA" ] || { echo "✗ 多余的位置参数：$1"; exit 2; }
        EXTRA="$1"; shift ;;
   esac
@@ -46,9 +47,10 @@ fi
 
 read_file() {
   [ -f "$FILE" ] || die "版本文件不存在：$FILE（用 init <x.y.z> 创建）"
-  VN=$(grep -E '^VERSION_NAME='  "$FILE" | tail -1 | cut -d= -f2-)
-  VC=$(grep -E '^VERSION_CODE='  "$FILE" | tail -1 | cut -d= -f2-)
-  DC=$(grep -E '^DEV_CYCLE='    "$FILE" | tail -1 | cut -d= -f2-)
+  # || true 保住下方 die 诊断出口：pipefail×set-e 下 grep 无匹配曾静默退出零输出（沙盒审计 B1 定规）
+  VN=$(grep -E '^VERSION_NAME='  "$FILE" | tail -1 | cut -d= -f2- || true)
+  VC=$(grep -E '^VERSION_CODE='  "$FILE" | tail -1 | cut -d= -f2- || true)
+  DC=$(grep -E '^DEV_CYCLE='    "$FILE" | tail -1 | cut -d= -f2- || true)
   [ -n "$VN" ] || die "缺 VERSION_NAME"
   [ -n "$VC" ] || die "缺 VERSION_CODE"
 }
@@ -62,14 +64,23 @@ write_file() { # $1=新VN $2=新VC $3=新DC
 }
 
 parse() { # 解析 $VN → 相位
-  if [[ "$VN" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+  # 数字段禁前导零（SemVer；tag 字符串排序曾致倒退）、dev 序号从 1 起（§2.1——沙盒审计 B2/B3 定规）
+  if [[ "$VN" =~ ^([1-9][0-9]*|0)\.([1-9][0-9]*|0)\.([1-9][0-9]*|0)$ ]]; then
     PHASE=stable; MAJ=${BASH_REMATCH[1]}; MIN=${BASH_REMATCH[2]}; PAT=${BASH_REMATCH[3]}; DN=0
-  elif [[ "$VN" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)-dev\.([0-9]+)$ ]]; then
+  elif [[ "$VN" =~ ^([1-9][0-9]*|0)\.([1-9][0-9]*|0)\.([1-9][0-9]*|0)-dev\.([1-9][0-9]*)$ ]]; then
     PHASE=dev; MAJ=${BASH_REMATCH[1]}; MIN=${BASH_REMATCH[2]}; PAT=${BASH_REMATCH[3]}; DN=${BASH_REMATCH[4]}
-  elif [[ "$VN" =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)-beta$ ]]; then
+  elif [[ "$VN" =~ ^([1-9][0-9]*|0)\.([1-9][0-9]*|0)\.([1-9][0-9]*|0)-beta$ ]]; then
     PHASE=beta; MAJ=${BASH_REMATCH[1]}; MIN=${BASH_REMATCH[2]}; PAT=${BASH_REMATCH[3]}; DN=0
   else
     die "VERSION_NAME 非法：$VN（合法格式 x.y.z / x.y.z-dev.n / x.y.z-beta）"
+  fi
+}
+
+check_cycle() { # 相位迁移前预检：脏文件（DC 与序号不一致）曾致版本号倒退——迁移与 validate 同规（沙盒审计 B5 定规）
+  [ "$PHASE" = stable ] && return 0
+  [ -n "$DC" ] && [ "$DC" -ge 1 ] 2>/dev/null || die "DEV_CYCLE 缺失或非法（${DC:-空}）——版本文件脏，先跑 validate"
+  if [ "$PHASE" = dev ] && [ "$DC" != "$DN" ]; then
+    die "DEV_CYCLE($DC) 与 dev 序号($DN) 不一致——版本文件脏，先跑 validate"
   fi
 }
 
@@ -80,7 +91,7 @@ case "$CMD" in
 
   init)
     NEW="$EXTRA"
-    [[ "$NEW" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || die "init 需要正式版号 x.y.z（得到：$NEW）"
+    [[ "$NEW" =~ ^([1-9][0-9]*|0)\.([1-9][0-9]*|0)\.([1-9][0-9]*|0)$ ]] || die "init 需要正式版号 x.y.z（无前导零；得到：$NEW）"
     [ -f "$FILE" ] && die "版本文件已存在；如需重置请人工确认后删除"
     if [ "$DRY" = 1 ]; then echo "[dry-run] 初始化 $FILE：VERSION_NAME=$NEW VERSION_CODE=1 DEV_CYCLE=0"; exit 0; fi
     printf 'VERSION_NAME=%s\nVERSION_CODE=1\nDEV_CYCLE=0\n' "$NEW" > "$FILE"
@@ -98,7 +109,7 @@ case "$CMD" in
     write_file "$N-dev.1" "$((VC+1))" 1 ;;
 
   dev)
-    read_file; parse
+    read_file; parse; check_cycle
     case "$PHASE" in
       dev)  write_file "$MAJ.$MIN.$PAT-dev.$((DN+1))" "$((VC+1))" "$((DN+1))" ;;
       beta) [ -n "$DC" ] && [ "$DC" -ge 1 ] 2>/dev/null || die "缺 DEV_CYCLE，无法从 beta 退回 dev"
@@ -107,20 +118,23 @@ case "$CMD" in
     esac ;;
 
   beta)
-    read_file; parse
+    read_file; parse; check_cycle
     [ "$PHASE" = dev ] || die "只有开发版可升 beta（当前 $VN 是 $PHASE）——阶梯不可跳级"
     write_file "$MAJ.$MIN.$PAT-beta" "$((VC+1))" "${DC:-$DN}" ;;
 
   stable)
-    read_file; parse
+    read_file; parse; check_cycle
     [ "$PHASE" = beta ] || die "只有测试版可转正（当前 $VN 是 $PHASE）——阶梯不可跳级"
     write_file "$MAJ.$MIN.$PAT" "$((VC+1))" "${DC:-0}" ;;
 
   validate)
     read_file; parse
     [ "$VC" -ge 1 ] 2>/dev/null || die "VERSION_CODE 必须为 ≥1 的整数（当前 $VC）"
-    if [ -n "$DC" ]; then
-      [ "$DC" -ge 0 ] 2>/dev/null || die "DEV_CYCLE 必须为 ≥0 的整数（当前 $DC）"
+    if [ "$PHASE" = stable ]; then
+      if [ -n "$DC" ]; then [ "$DC" -ge 0 ] 2>/dev/null || die "DEV_CYCLE 必须为 ≥0 的整数（当前 $DC）"; fi
+    else
+      # dev/beta 相位 DC 强制非空整数（空值曾 fail-open，后续阶梯必死——沙盒审计 B6 定规）
+      [ -n "$DC" ] && [ "$DC" -ge 1 ] 2>/dev/null || die "dev/beta 相位 DEV_CYCLE 必须为 ≥1 的整数（当前 ${DC:-空}）"
       if [ "$PHASE" = dev ] && [ "$DC" != "$DN" ]; then
         die "DEV_CYCLE($DC) 与 dev 序号($DN) 不一致"
       fi

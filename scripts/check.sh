@@ -31,6 +31,19 @@ while [ $# -gt 0 ]; do
   esac
 done
 
+# 参数校验：--only/--skip 须为 1-10 门禁编号——垃圾值曾静默零门禁全过（打错字即绕过全部门禁——2026-09-23 沙盒审计定规）
+validate_ids() { # $1=选项名 $2=值
+  [ -n "$2" ] || return 0
+  local t
+  local IFS=,
+  for t in $2; do
+    case "$t" in ''|*[!0-9]*) echo "✗ $1 值含非数字项：$t（合法：1-10 逗号分隔）"; exit 2 ;; esac
+    [ "$t" -ge 1 ] && [ "$t" -le 10 ] || { echo "✗ $1 门禁编号越界：$t（合法：1-10）"; exit 2; }
+  done
+}
+validate_ids --only "$ONLY"
+validate_ids --skip "$SKIP"
+
 if [ "$MODE" = "source" ]; then ROOT="$HERE/.."; else ROOT="$TARGET"; fi
 if [ "$MODE" = "deployed" ] && { [ -z "$TARGET" ] || [ ! -d "$TARGET" ]; }; then
   echo "✗ --deployed 目标目录不存在或不可进入——拒绝回退到当前目录扫描"
@@ -170,6 +183,10 @@ if want 10; then mark 10
   fi
 fi
 
+if [ -z "${RAN// /}" ]; then
+  echo "✗ 过滤后未运行任何门禁（--skip 全跳）——拒绝空跑通过"
+  exit 2
+fi
 echo "---"
 echo "已运行门禁:$RAN"
 if [ "$FAIL" -eq 0 ]; then

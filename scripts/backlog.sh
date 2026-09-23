@@ -44,12 +44,14 @@ case "$cmd" in
     shift || true
     case "$sub" in
       new)
+        NBJ="${1:-}"
+        [ -n "$NBJ" ] || { echo '用法: backlog.sh journal new <批次名kebab>'; exit 2; }
         NB="$HERE/new-batch.sh"
         [ -f "$NB" ] || NB="ai-dev-guide/scripts/new-batch.sh"
-        exec bash "$NB" "$1"
+        exec bash "$NB" "$NBJ"
         ;;
       append)
-        F="$1"; T="$2"
+        F="${1:-}"; T="${2:-}"
         if [ -z "$F" ] || [ -z "$T" ]; then echo '用法: backlog.sh journal append <file> "<文本>"'; exit 2; fi
         case "$F" in
           */backlog.md|backlog.md) echo "✗ 拒绝：journal append 不能写账本本体（backlog 卡片区禁覆写）"; exit 1 ;;

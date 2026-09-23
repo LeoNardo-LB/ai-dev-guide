@@ -132,6 +132,43 @@ if [ "$QUICK" = 0 ]; then
   bash scripts/check.sh --deployed "$D" --only 9 >/dev/null 2>&1
   [ $? -ne 0 ] && echo '  ✓ R8 行尾编号计入（计数器 #999 被判撞号）' || { echo '  ✗ R8 行尾裸编号漏检'; FAIL=1; }
   rm -f "$D/docs/journal/2026-01-01-drill.md"
+
+  # R13 [v2.6.3]：脚本边界矩阵（沙盒审计定规——check 参数校验 / init 防呆 / 裁剪组合全量门禁 / 账本缺参友好报错）
+  bash scripts/check.sh --only abc >/dev/null 2>&1
+  [ $? -eq 2 ] && echo '  ✓ R13a check --only 垃圾值被拒（exit 2）' || { echo '  ✗ R13a check --only 垃圾值静默通过'; FAIL=1; }
+  bash scripts/check.sh --only 11 >/dev/null 2>&1
+  [ $? -eq 2 ] && echo '  ✓ R13b check --only 越界被拒（exit 2）' || { echo '  ✗ R13b check --only 越界静默通过'; FAIL=1; }
+  bash scripts/check.sh --skip 1,2,3,4,5,6,7,8,9,10 >/dev/null 2>&1
+  [ $? -eq 2 ] && echo '  ✓ R13c check --skip 全跳空跑被拒' || { echo '  ✗ R13c 空跑静默通过'; FAIL=1; }
+  bash scripts/init.sh "$TMP/n13d" --dir 'a b' >/dev/null 2>&1
+  [ $? -eq 2 ] && echo '  ✓ R13d init --dir 含空白被拒' || { echo '  ✗ R13d init --dir 含空白被接受'; FAIL=1; }
+  printf x > "$TMP/n13e"
+  bash scripts/init.sh "$TMP/n13e" >/dev/null 2>&1
+  [ $? -eq 2 ] && echo '  ✓ R13e init 文件目标被拒' || { echo '  ✗ R13e init 把文件路径建成目录'; FAIL=1; }
+  bash scripts/init.sh "$TMP/n13f" --no-ui --no-example >/dev/null 2>&1
+  bash scripts/check.sh --deployed "$TMP/n13f" >/dev/null 2>&1
+  [ $? -eq 0 ] && echo '  ✓ R13f --no-ui --no-example 组合全量门禁通过' || { echo '  ✗ R13f 裁剪组合门禁失败'; FAIL=1; }
+  ( cd "$D" && bash ai-dev-guide/scripts/backlog.sh add ) 2>/tmp/r13.txt
+  if [ $? -ne 0 ] && ! grep -q Traceback /tmp/r13.txt; then echo '  ✓ R13g 账本缺参友好报错（无 Traceback）'; else echo '  ✗ R13g 账本缺参裸 Traceback'; FAIL=1; fi
+  ( cd "$D" && bash ai-dev-guide/scripts/backlog.sh show abc ) 2>/tmp/r13.txt
+  if ! grep -q Traceback /tmp/r13.txt; then echo '  ✓ R13h 非数字编号友好报错'; else echo '  ✗ R13h 非数字编号裸 Traceback'; FAIL=1; fi
+  ( cd "$D" && bash ai-dev-guide/scripts/backlog.sh add '' s ) 2>/tmp/r13.txt
+  if ! grep -q '已登记' /tmp/r13.txt; then echo '  ✓ R13i 空标题被拒'; else echo '  ✗ R13i 空标题被接受'; FAIL=1; fi
+
+  # R14 [v2.6.3]：release-version 边界矩阵（子代理沙盒 A 组定规——静默死 / dev.0 / 前导零 / --bump 缺值）
+  RV=scripts/release-version.sh
+  : > "$TMP/rv1"
+  OUT=$(bash $RV "$TMP/rv1" validate 2>&1); RC=$?
+  if [ $RC -ne 0 ] && [ -n "$OUT" ]; then echo '  ✓ R14a 版本文件缺键有诊断（非静默死）'; else echo '  ✗ R14a 缺键静默退出'; FAIL=1; fi
+  printf 'VERSION_NAME=1.0.0-dev.0\nVERSION_CODE=5\nDEV_CYCLE=0\n' > "$TMP/rv2"
+  bash $RV "$TMP/rv2" validate >/dev/null 2>&1 && { echo '  ✗ R14b dev.0 被放行'; FAIL=1; } || echo '  ✓ R14b dev.0 被拒（序号从 1 起）'
+  bash $RV "$TMP/rvnew" init 01.0.0 >/dev/null 2>&1 && { echo '  ✗ R14c 前导零被放行'; FAIL=1; } || echo '  ✓ R14c 前导零被拒'
+  bash $RV "$TMP/rvnew" init 1.0.0 >/dev/null 2>&1
+  bash $RV "$TMP/rvnew" next --bump >/tmp/r14.txt 2>&1
+  if [ $? -eq 2 ] && grep -q '需要值' /tmp/r14.txt; then echo '  ✓ R14d --bump 缺值干净拒绝（exit 2）'; else echo '  ✗ R14d --bump 缺值裸崩'; FAIL=1; fi
+  printf 'VERSION_NAME=1.0.0-dev.5\nVERSION_CODE=5\nDEV_CYCLE=2\n' > "$TMP/rv3"
+  bash $RV "$TMP/rv3" beta >/dev/null 2>&1 && { echo '  ✗ R14e 脏文件迁移被放行（版本号会倒退）'; FAIL=1; } || echo '  ✓ R14e DC/序号不一致迁移被拒'
+
   rm -rf "$TMP"
 
   echo "== 3.5 扫描器回归断言（夹具仓，不触碰真仓库）=="

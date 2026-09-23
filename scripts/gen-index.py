@@ -85,7 +85,14 @@ def _assign(target, key, val, lineno):
 
 def load():
     mf = os.path.join(ROOT, "manifest.yaml")
+    if not os.path.isfile(mf):
+        raise ManifestError(f"manifest.yaml 不存在：{mf}（在源仓根运行？）")
     data = parse_manifest(mf)
+    # 字段存在性校验必须先于 id/path 去重（去重访问 d["path"]——缺 path 曾裸 KeyError，沙盒审计 D7 定规）
+    for d in data["docs"]:
+        for f in ("id", "path", "kind", "plane", "level", "purpose", "use_when", "trim_group", "indexed"):
+            if f not in d:
+                raise ManifestError(f"docs 条目 {d.get('id','?')} 缺字段 {f}")
     ids = [d["id"] for d in data["docs"]]
     if len(ids) != len(set(ids)):
         dup = [i for i in ids if ids.count(i) > 1]
@@ -95,15 +102,19 @@ def load():
         dup = [p for p in paths if paths.count(p) > 1]
         raise ManifestError(f"重复 path: {sorted(set(dup))}")
     for d in data["docs"]:
-        for f in ("id", "path", "kind", "plane", "level", "purpose", "use_when", "trim_group", "indexed"):
-            if f not in d:
-                raise ManifestError(f"docs 条目 {d.get('id','?')} 缺字段 {f}")
         if d["level"] not in ("MUST", "SHOULD", "MAY"):
             raise ManifestError(f"{d['id']}: level 非法 {d['level']}")
         if d["kind"] not in ("content", "template", "registry"):
             raise ManifestError(f"{d['id']}: kind 非法 {d['kind']}")
         if d["plane"] not in ("deployed", "source"):
             raise ManifestError(f"{d['id']}: plane 非法 {d['plane']}")
+        for k in ("purpose", "use_when", "trim_group", "indexed"):
+            if not isinstance(d[k], str):
+                raise ManifestError(f"{d['id']}: {k} 须为标量（行内 [a, b] 列表写法只用于 replaces 等列表字段）")
+        if "budget" in d and not isinstance(d["budget"], str):
+            raise ManifestError(f"{d['id']}: budget 须为标量")
+        if d["trim_group"] not in ("core", "ui", "stack-example", "registry"):
+            raise ManifestError(f"{d['id']}: trim_group 非法 {d['trim_group']!r}（合法：core/ui/stack-example/registry）")
     return data
 
 LEVEL_ORDER = {"MUST": 0, "SHOULD": 1, "MAY": 2}

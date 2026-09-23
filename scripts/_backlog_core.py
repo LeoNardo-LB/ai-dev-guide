@@ -9,6 +9,15 @@ bl_path, cmd = sys.argv[1], sys.argv[2]
 argv = sys.argv[3:]
 BT = chr(96)
 
+def need(k, usage):
+    """参数守卫：不足 k 个 → 干净退出（防裸 Traceback 泄内部——2026-09-23 沙盒审计定规）"""
+    if len(argv) < k: sys.exit("✗ 用法：" + usage)
+
+def num(s, usage):
+    """卡片编号解析：非数字 → 干净退出"""
+    try: return int(s)
+    except ValueError: sys.exit("✗ 卡片编号须为数字：%s（用法：%s）" % (s, usage))
+
 # 账本文件锁：并发 add/migrate 串行化（防全量读改写互相覆写——并发丢卡事故定规）。
 # 锁必须用独立 .lock 文件：数据文件经 os.replace 换 inode，锁旧 inode 的新进程互不可见（ABA 竞态实测）。
 _lock_fd = open(bl_path + ".lock", "w")
@@ -46,10 +55,13 @@ if cmd == "next":
     print("下一编号：#%d" % counter()); sys.exit(0)
 
 if cmd == "show":
-    n = int(argv[0]); i = find_card(n); s, e = card_block(i)
+    need(1, "backlog.sh show <N>"); n = num(argv[0], "backlog.sh show <N>")
+    i = find_card(n); s, e = card_block(i)
     print("\n".join(lines[s:e])); sys.exit(0)
 
 if cmd == "add":
+    need(1, 'backlog.sh add "<标题>" ["<≤3行摘要>"] [tag ...] [-p 0-4]')
+    if not argv[0].strip(): sys.exit("✗ 卡片标题不能为空")
     title = argv[0]
     summary = argv[1] if len(argv) > 1 else ""
     rest = argv[2:]; prio = "2"
@@ -79,7 +91,8 @@ if cmd == "add":
     print("✓ 已登记 #%d（P%s）；下一编号 #%d" % (n, prio, n+1)); sys.exit(0)
 
 if cmd == "note":
-    n = int(argv[0]); note = argv[1]
+    need(2, 'backlog.sh note <N> "<文本>"'); n = num(argv[0], "backlog.sh note <N> \"<文本>\"")
+    note = argv[1]
     i = find_card(n); s, e = card_block(i)
     stamp = datetime.date.today().isoformat()
     lines.insert(e, "  - %s note: %s" % (stamp, note))
@@ -87,7 +100,8 @@ if cmd == "note":
     print("✓ 已给 #%d 追加注记" % n); sys.exit(0)
 
 if cmd == "status":
-    n = int(argv[0]); st = argv[1]
+    need(2, "backlog.sh status <N> <todo|verify>"); n = num(argv[0], "backlog.sh status <N> <todo|verify>")
+    st = argv[1]
     if st not in {"todo", "verify"}: sys.exit("✗ status 仅 todo(进行中) | verify(待验证)")
     i = find_card(n)
     if st == "verify":
@@ -102,8 +116,8 @@ if cmd == "status":
     print("✓ #%d → %s" % (n, st)); sys.exit(0)
 
 if cmd == "prio":
-    if len(argv) < 2: sys.exit("✗ 用法：backlog.sh prio <N> <0-4>")
-    n = int(argv[0]); p = argv[1]
+    need(2, "backlog.sh prio <N> <0-4>"); n = num(argv[0], "backlog.sh prio <N> <0-4>")
+    p = argv[1]
     if p not in {"0","1","2","3","4"}: sys.exit("✗ 优先级取值 0-4——判据见 workflows/requirements.md 第 3 节")
     i = find_card(n); s, e = card_block(i)
     m = card_start(i)
@@ -132,7 +146,9 @@ if cmd == "prio":
     print("✓ #%d 优先级已调至 P%s（note 留痕；计数器不动）" % (n, p)); sys.exit(0)
 
 if cmd == "migrate":
-    n = int(argv[0]); rest = argv[1:]
+    need(1, 'backlog.sh migrate <N> [-r "<未验迁移依据>"] [--journal <file>]')
+    n = num(argv[0], "backlog.sh migrate <N>")
+    rest = argv[1:]
     reason = None; jf = None
     if "-r" in rest: k = rest.index("-r"); reason = rest[k+1]; del rest[k:k+2]
     if "--journal" in rest: k = rest.index("--journal"); jf = rest[k+1]; del rest[k:k+2]

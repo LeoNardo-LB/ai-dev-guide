@@ -32,6 +32,8 @@ done
 
 [ -n "$TARGET" ] || { echo "用法: init.sh <目标项目根> [--dir 名] [--no-ui] [--no-example]"; exit 2; }
 case "$SYSNAME" in ''|.|..|*/*) echo "✗ 非法系统目录名：$SYSNAME（须为单层目录名）"; exit 2 ;; esac
+case "$SYSNAME" in *[[:space:]]*) echo "✗ 系统目录名含空白字符：$SYSNAME——markdown 链接不支持未转义空格，请改用连字符"; exit 2 ;; esac
+if [ -e "$TARGET" ] && [ ! -d "$TARGET" ]; then echo "✗ 目标已存在且不是目录：$TARGET"; exit 2; fi
 mkdir -p "$TARGET"
 TARGET="$(cd "$TARGET" && pwd)"
 command -v python3 >/dev/null || { echo "✗ 需要 python3"; exit 1; }
@@ -108,6 +110,12 @@ for d in sorted([d for d in data['docs'] if d['plane']=='deployed' and d['indexe
     rows.append(f"| {icon[d['level']]} {d['level']} | [{sysname}/{p}]({sysname}/{p}) | {d['purpose']} | {d['use_when']} |")
 pat = re.compile(r'<!-- GEN:agents-index:start -->.*?<!-- GEN:agents-index:end -->', re.S)
 tpl = pat.sub('<!-- GEN:agents-index:start -->\n' + '\n'.join(rows) + '\n<!-- GEN:agents-index:end -->', tpl, count=1)
+# 裁剪组文档的手写引用行一并剔除（如「其他」节的 ui-conventions 条目）——防纯文本路径与 §引用残留（2026-09-23 沙盒审计定规）
+if no_ui or no_ex:
+    dropped = [d['path'] for d in data['docs']
+               if (d['trim_group'] == 'ui' and no_ui) or (d['trim_group'] == 'stack-example' and no_ex)]
+    tpl = '\n'.join(l for l in tpl.split('\n')
+                    if not any((sysname + '/' + p) in l for p in dropped))
 open(out, 'w', encoding='utf-8').write(tpl)
 print(f'✓ 生成 {out}')
 PYEOF

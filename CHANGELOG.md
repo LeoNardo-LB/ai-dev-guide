@@ -2,6 +2,25 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.6.3] - 2026-09-23
+
+全脚本沙盒穷举审计（主测矩阵 + 三路子代理外围矩阵），修复 23 处缺陷并新增 R13/R14 十四条回归断言。
+
+### Fixed
+
+- **check.sh（P1）**：--only/--skip 垃圾值（abc/xyz）、越界值（11）、全跳空跑曾静默「零门禁运行 + 结果：通过 exit 0」——打错字即绕过全部门禁；现参数校验 exit 2 + 空跑拒绝
+- **init.sh**：--no-ui --no-example 组合部署后部署门禁 6 必挂（AGENTS 手写行引用已裁剪文档 + scrub 洗链接不洗 §N）；--dir 含空格生成 49 处断链；文件目标被建成目录——三防呆 + AGENTS 生成器剔除裁剪组引用行 + scrub 悬空 §N 清洗
+- **_backlog_core.py**：五子命令缺参/编号非数字裸 Traceback；add 空标题产出残卡——need/num 守卫全部干净报错
+- **upgrade.sh**：目录名传错曾静默产出误导报告（含把用户 docs/ 误报本地新增）——校验「像部署目录」+ 提示疑似名；上游删除文档曾误报「本地新增+回馈上游」——新增「上游已删除」桶；明细 >20 条静默截断；缺 gen-index.py 裸 traceback
+- **release-version.sh**：缺键/空文件静默零输出（pipefail×set-e 令诊断成死代码）；dev.0/dev.00 放行；前导零全链放行（tag 字符串排序倒退）；--bump 缺值裸崩；脏文件迁移致版本号倒退（dev.5→dev.3）；DEV_CYCLE 空值 validate 放行——六修 + 迁移前 check_cycle 预检
+- **scan-secrets.sh**：重构逐文件两段式——文件名含冒号与超长行豁免从此可解析；参数拒绝；白名单缺失不再静默建文件
+- **new-batch.sh / gen-index.py**：批次名超长裸崩 → 上限 100；manifest 缺字段/行内列表误入/文件缺失裸 traceback → 干净校验报错
+
+### Added
+
+- selftest R13（a-i：check 参数校验 / init 防呆 / 裁剪组合全量门禁 / 账本缺参）与 R14（a-e：版本文件边界）共十四条回归断言
+- 三路子代理复现夹具留存（/tmp/rv-sandbox、scan-sandbox、up-sandbox 可重放）
+
 ## [2.6.2] - 2026-09-23
 
 ### Fixed
