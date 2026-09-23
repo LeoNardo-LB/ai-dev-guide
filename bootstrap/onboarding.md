@@ -11,7 +11,7 @@
 
 | # | 步骤 | 命令 | 脚本做什么 |
 |---|------|------|-----------|
-| 1 | 部署 | ./scripts/init.sh 目标项目根（在本源仓运行；目标项目内只有 check/new-batch/release-version/scan-secrets 四个运行时脚本） | 按裁剪组复制部署平面 → 生成 AGENTS.md（索引实例化）→ 实例化 backlog/CONTEXT/能力域/债务登记簿 → 跑部署门禁 → 报告待补占位符 |
+| 1 | 部署 | ./scripts/init.sh 目标项目根（在本源仓运行；目标项目内有 check/new-batch/backlog/release-version/scan-secrets 五个运行时脚本） | 按裁剪组复制部署平面 → 生成 AGENTS.md（索引实例化）→ 实例化 backlog/CONTEXT/能力域/债务登记簿 → 跑部署门禁 → 报告待补占位符 |
 | 2 | 补填 | 人工 | AGENTS.md 的项目占位符 + stack-profile.md 栈事实 + CONTEXT.md 首批术语 + 3-5 条承重红线 |
 | 3 | 提交 | git | AGENTS.md + 系统目录 + backlog.md + CONTEXT.md + docs/ 同 commit（可先跑 系统目录/scripts/scan-secrets.sh）；backlog 首条登记「文档系统初始化」 |
 
@@ -54,6 +54,10 @@ init.sh 选项：--dir 系统目录名（默认 ai-dev-guide）· --no-ui（无 
 | 我的栈不是 Android/Kotlin？ | init.sh --no-example 裁掉范例；按 stack-profile 替换指南重写绑定栈的示例 |
 | 完整写作规范在哪？ | 部署面只带 edit-card.md（编辑卡）；完整规范在源仓 meta/ 三份，按需复制 |
 | 某条规则总不被遵守？ | 检查指针措辞（Use when 首词 = 触发动词）与级别；虚高的 MUST 会被整体忽视 |
+
+## 6. 移除（detach）
+
+不再使用本系统时：先跑 upgrade.sh 生成漂移报告确认无未合并本地化 → 删除系统目录（默认 ai-dev-guide/）与 AGENTS.md → backlog 未决卡迁出（journal 归档）→ CONTEXT.md 与 docs/{journal,specs,acceptance,research} 可保留（项目历史，git 可找回）。逆向操作不可用 upgrade 撤销，删除前建议打 tag 存档。
 
 ## Related
 

@@ -100,4 +100,4 @@
 
 - 发版权威指南：[../workflows/release.md](../workflows/release.md)
 - 发版说明模板：[./release-notes.md](./release-notes.md)
-- 版本号与构建命令：[../stack/android-kotlin-example.md](../stack/android-kotlin-example.md)
+- 版本号与构建命令真相源：[../stack/stack-profile.md](../stack/stack-profile.md) 第 5/6 节（范例文件不是真相源）

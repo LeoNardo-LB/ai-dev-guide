@@ -24,6 +24,8 @@
 
 ### 2.1 格式与相位阶梯
 
+> 适用域注记：本节阶梯约束**部署面项目**；蓝本自身为单仓文档系统（无构建产物），版本 = manifest system.version + git tag 单轨。
+
 ```
 <MAJOR>.<MINOR>.<PATCH>[-dev.<n>|-beta]
 ```
@@ -44,7 +46,7 @@
 
 | # | 规则 | 违反后果 |
 |---|------|----------|
-| 1 | 新版本唯一入口：从正式版 `next --bump <major|minor|patch>` → 下一版本 dev.1 | 跳级发布未验证版本 |
+| 1 | 新版本唯一入口：从正式版 `next --bump major 或 minor 或 patch` → 下一版本 dev.1 | 跳级发布未验证版本 |
 | 2 | dev.n 可继续迭代（`dev` → n+1）；自验通过升 `beta`；测试通过转正 `stable`（去后缀） | 相位混乱，用户分不清产物成熟度 |
 | 3 | beta 发现缺陷：退回同版本 dev（`dev`，n 续增）修复，再走 beta → stable | 缺陷带病转正 |
 | 4 | 版本操作一律走 scripts/release-version.sh——非法转移（stable→beta、dev→stable 等）直接拒绝 | 手工改号产生非法版本 |
@@ -60,9 +62,11 @@
 | 版本变更一律走 scripts/release-version.sh；发版前跑其 validate 子命令 | 手改绕过阶梯校验 |
 | CI 提取不改格式 | CI 解析失败 → 发版中断 |
 | 严禁版本号修改前构建 | 产物内嵌版本与 tag/Release 不一致 |
-| tag 递进链校验：beta tag 存在 ⇒ 同线 dev.N tag 齐全；正式 tag 存在 ⇒ 同线 beta + dev 齐全（validate 可挂 CI） | 跳级/缺环版本流出 |
+| tag 递进链校验：beta tag 存在 ⇒ 同线 dev.N tag 齐全；正式 tag 存在 ⇒ 同线 beta + dev 齐全 | 跳级/缺环版本流出 |
 | 防回退护栏：版本文件落后于已发布正式版时，禁止产出更小版本号 | 版本号回退，升级链断裂 |
 | 开新线 bump 基准：本线正式 tag → 本线 beta tag → 上一正式版，逐级回溯取第一个存在者 | 基准取错，版本倒退 |
+
+注（2026-09-23 审计如实声明）：上表末三条（tag 递进链 / 防回退 / 开新线基准）当前为**发版时人工核对项**，release-version.sh validate 暂未覆盖（只查格式/VERSION_CODE/DEV_CYCLE）；机器化属在册遗留。
 
 ### 2.3 相位默认策略
 

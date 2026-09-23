@@ -1,12 +1,12 @@
 # E2E 测试双文档模板（期望文档 + 实操文档）
 
-> E2E 测试按双文档模式拆为「期望文档（测前写，规定测什么、期望什么）+ 实操文档（测中记，逐轮对比期望）」；本模板一份文件承载两部分，复制后拆成两个文件使用。
+> E2E 测试按双文档模式拆为「期望文档（测前写，本模板）+ 实操文档（测中记，[e2e-runbook.md](./e2e-runbook.md)）」；两文件成对使用、互为引用。
 
 ## Use when
 
 - 设计 E2E 测试（写 Part A 期望文档）前
 - 执行 E2E 测试（填 Part B 实操文档）中
-- 双文档模式的分离理由与交叉印证方法见 [../workflows/verify.md](../workflows/verify.md) §5——本模板只给结构
+- 交叉印证方法（同结论 ≥2 独立维度）见 [../workflows/verify.md](../workflows/verify.md) 第 3 节；判定词表（SCR/DYN）见 [e2e-runbook.md](./e2e-runbook.md)
 
 ## 模板本体
 

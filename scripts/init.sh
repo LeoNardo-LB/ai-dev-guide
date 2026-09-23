@@ -138,8 +138,13 @@ write_readme journal "# Journal\n\n批次执行与证据日志（append-only）�
 write_readme specs   "# Specs\n\n进行中的设计决策（active）；验收后移入 docs/archive/specs/。"
 write_readme research "# Research\n\n从 journal 蒸馏的可复用调研结论。"
 write_readme archive  "# Archive\n\n归档：完结 spec 的最终归宿（定期清理零外部引用者，git 历史可找回）。"
+write_readme acceptance "# Acceptance\n\n验收清单落盘（一卡一份）：YYYY-MM-DD-编号-slug.md（规则见 $SYSNAME/workflows/acceptance.md 第 2 节）。"
 mkdir -p "$TARGET/docs/archive/specs"
-echo "✓ docs/{journal,specs,research,archive} 就绪（README 含真实换行）"
+# env-runbook 骨架：AGENTS.md 指针目标（不建则首屏死指引——2026-09-23 审计 U-P0-3）
+if [ ! -f "$TARGET/docs/env-runbook.md" ]; then
+  cp "$HERE/../templates/env-runbook.md" "$TARGET/docs/env-runbook.md"
+fi
+echo "✓ docs/{journal,specs,research,archive,acceptance} + env-runbook 骨架就绪"
 
 # 5. 悬空链接清洗（裁剪/源平面目标的链接改纯文本）
 #     含生成的 AGENTS.md（$OUT）：--no-ui 等裁剪后模板正文手写链接可能悬空，一并转纯文本
@@ -150,12 +155,17 @@ python3 "$HERE/_scrub_links.py" "$DEST" "$OUT" "$TARGET/CONTEXT.md" "$TARGET/bac
 #     区分「用户本地化修改」与「上游更新」；重新部署会刷新基线。
 BASELINE="$DEST/.deploy-baseline.txt"
 : > "$BASELINE"
+HASH() { # sha256 兼容 macOS（shasum 回退；失败即中止——防静默写坏基线，2026-09-23 审计 U-P0-2）
+  if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1"
+  elif command -v shasum >/dev/null 2>&1; then shasum -a 256 "$1"
+  else echo "✗ 无 sha256sum/shasum——无法生成部署基线" >&2; exit 1; fi
+}
 record() { # $1=相对目标根的路径
   [ -f "$TARGET/$1" ] || return 0
-  echo "$(sha256sum "$TARGET/$1" | cut -d' ' -f1)  $1" >> "$BASELINE"
+  echo "$(HASH "$TARGET/$1" | cut -d' ' -f1)  $1" >> "$BASELINE"
 }
 ( cd "$TARGET" && find "$SYSNAME" \( -name '*.md' -o -name '*.sh' -o -name '*.py' \) | sort ) | while read -r rel; do
-  echo "$(sha256sum "$TARGET/$rel" | cut -d' ' -f1)  $rel" >> "$BASELINE"
+  echo "$(HASH "$TARGET/$rel" | cut -d' ' -f1)  $rel" >> "$BASELINE"
 done
 case "$OUT" in
   "$TARGET/AGENTS.md")     record "AGENTS.md" ;;
@@ -167,16 +177,26 @@ echo "✓ 部署基线 → $SYSNAME/.deploy-baseline.txt（$(wc -l < "$BASELINE"
 
 # 6. 残留占位符报告（人工补填清单）
 echo
-echo "== 待人工补填的占位符（项目事实）=="
-grep -nE '<[a-zA-Z][a-zA-Z0-9_ /-]{0,40}>' "$OUT" | head -20 || echo "（无）"
+echo "== 待人工补填的占位符（项目事实，含中文）=="
+python3 - "$OUT" <<'PYIN'
+import re, sys
+hits = []
+for i, l in enumerate(open(sys.argv[1], encoding='utf-8'), 1):
+    for m in re.finditer(r'<([^<>]{1,40})>', l):
+        s = m.group(1)
+        if s.startswith(('http', '/')): continue
+        hits.append(f"{i}: <{s}>")
+        break
+print(chr(10).join(hits[:20]) if hits else '（无）')
+PYIN
 
-# 6. 部署门禁
+# 7. 部署门禁
 echo
 echo "== 部署门禁 =="
 bash "$HERE/check.sh" --deployed "$TARGET" --only 1,9,10 || true
 
 echo
 echo "== 完成 =="
-echo "下一步：① 补填 $OUT 中的 <占位符>（栈事实）；② 填 $SYSNAME/stack/stack-profile.md；"
-echo "③ 首条 backlog 登记（docs 系统初始化）；④ git add AGENTS.md $SYSNAME backlog.md CONTEXT.md docs/ 并提交。"
-echo "④ 提交前可跑 $SYSNAME/scripts/scan-secrets.sh 扫敏感信息（白名单在其同目录 scan-secrets.allow）。"
+echo "下一步：① 补填 $OUT 与 docs/env-runbook.md 中的 <占位符>（栈事实）；② 填 $SYSNAME/stack/stack-profile.md；"
+echo "③ 首条 backlog 登记（$SYSNAME/scripts/backlog.sh add）；④ 提交前跑 $SYSNAME/scripts/scan-secrets.sh 扫敏感信息；"
+echo "⑤ git add AGENTS.md $SYSNAME backlog.md CONTEXT.md docs/ 并提交（本 commit 即部署基线）。"

@@ -10,14 +10,14 @@
 
 system:
   name: ai-dev-guide
-  version: 2.5.0
+  version: 2.6.0
   language: zh
   description: 可整体复制到任意项目的渐进式披露 AI 开发文档系统
   entry: AGENTS.md.template
 
 planes:
   deployed: 复制进目标项目的文档平面（init.sh 按裁剪组复制）
-  source: 仅源仓维护的文档平面（治理/脚本/规格/决策，不随部署）
+  source: 仅源仓维护的平面（治理文档/治理脚本 init·upgrade·gen-index·selftest/规格/决策；运行时五脚本 check·new-batch·backlog·release-version·scan-secrets 随部署）
 
 defaults:
   line_budget: 250
@@ -308,8 +308,8 @@ docs:
     kind: template
     plane: deployed
     level: SHOULD
-    purpose: 人工验证清单（时间性现象）
-    use_when: UI 涉及动画/闪烁/计时类现象时
+    purpose: 人工验证清单（仅四类例外；时间性现象先仪器取证）
+    use_when: UI 涉及四类人工项或需用户确认观感时
     trim_group: ui
     indexed: true
     replaces: [06-ui/ui-verification.md §2]

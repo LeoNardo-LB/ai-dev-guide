@@ -25,3 +25,4 @@
 ## 蒸馏
 
 docs/research/2026-09-23-oc-beacon-reintegration.md（53 项差距矩阵 + 不搬运清单 + 整合路线）
+2026-09-23 勘误（系统审计批次）：本文件 GREEN 段「backlog.sh 功能演练……migrate 未验卡正确拒绝」与实测不符——当时 migrate 守卫为死代码（checkbox 替换先于判定），演练未命中真实拒绝路径；已修复（先判后换 + 诚实依据）并新增 selftest R12 回归断言（未验拒/同日双卡/影子拦截/5 位编号）。审计详见 docs/research/2026-09-23-system-audit.md 第 5 节。

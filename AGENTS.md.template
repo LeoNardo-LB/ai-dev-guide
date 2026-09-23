@@ -31,7 +31,7 @@
 | 🟡 SHOULD | [{{SYS}}/templates/e2e-runbook.md]({{SYS}}/templates/e2e-runbook.md) | E2E 实操记录（逐轮追加/差异归属） | 执行 E2E 测试时 |
 | 🟡 SHOULD | [{{SYS}}/templates/env-runbook.md]({{SYS}}/templates/env-runbook.md) | 测试环境 runbook 骨架（环境矩阵/标准入口/装包通道/坑清单） | 建立测试环境手册、真机或集成环境测试前 |
 | 🟡 SHOULD | [{{SYS}}/templates/journal-entry.md]({{SYS}}/templates/journal-entry.md) | 批次日志骨架（开工时创建；证据 append-only 归宿） | 开启新工作批次时 |
-| 🟡 SHOULD | [{{SYS}}/templates/manual-ui-checklist.md]({{SYS}}/templates/manual-ui-checklist.md) | 人工验证清单（时间性现象） | UI 涉及动画/闪烁/计时类现象时 |
+| 🟡 SHOULD | [{{SYS}}/templates/manual-ui-checklist.md]({{SYS}}/templates/manual-ui-checklist.md) | 人工验证清单（仅四类例外；时间性现象先仪器取证） | UI 涉及四类人工项或需用户确认观感时 |
 | 🟡 SHOULD | [{{SYS}}/templates/plan.md]({{SYS}}/templates/plan.md) | 实施计划骨架（Task/Steps/精确签名/TDD） | 大改动实施前 |
 | 🟡 SHOULD | [{{SYS}}/templates/release-notes.md]({{SYS}}/templates/release-notes.md) | 发版说明骨架（面向用户公告） | 撰写发版说明时 |
 | 🟡 SHOULD | [{{SYS}}/templates/requirement.md]({{SYS}}/templates/requirement.md) | 需求澄清卡（验收标准先行） | 澄清需求、展开规格时 |
@@ -53,7 +53,7 @@
 
 ## Build & Run
 
-> 精确命令（含 flags、超时）的唯一真相源是 [{{SYS}}/stack/stack-profile.md]({{SYS}}/stack/stack-profile.md) §5。此处只放符号：BUILD（编译检查）/ TEST（单元测试，强制重跑）/ RUN（完整构建），全带超时。
+> 精确命令（含 flags、超时）的唯一真相源是 [{{SYS}}/stack/stack-profile.md]({{SYS}}/stack/stack-profile.md) 第 5 节。此处只放执行符号：BUILD（编译检查）/ TEST（单元测试，强制重跑）/ RUN（完整构建），全带超时；观测符号 LOG/DUMP/SHOT 同见栈档案。
 
 ## 架构概览
 

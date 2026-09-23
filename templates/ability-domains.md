@@ -4,7 +4,7 @@
 
 ## Use when
 
-- 初始化项目能力域清单时（init.sh 复制到 docs/ability-domains.md）
+- 初始化项目能力域清单时（实例骨架是 registries/ability-domains.md，init.sh 复制它到 docs/ability-domains.md；本文件是格式与维护方法论）
 - 新能力合入同步登记、回归漏检回写时
 
 ## 建立方法
@@ -17,7 +17,7 @@
 
 ## 域条目格式
 
-手段编码：UI 元素状态观察 · LOG 日志关键字 · DATA 本地数据直查 · PERF 性能指标 · MANUAL 人工验收。
+手段编码：UI 元素状态观察 · LOG 日志关键字 · DATA 本地数据直查 · PERF 性能指标 · MANUAL 人工验收（与 verify 第 2 节命名维度对应：UI/PERF≈运行时、LOG/DATA≈遥测、MANUAL=人工；报告统一用命名维度）。
 
 已知误判陷阱（可选列，随回归沉淀）：某验证点曾给出假阳/假阴（如单向滚动测不出边界失效、截图哈希误报）→ 在对应域条目登记「⚠ 陷阱 + 规避断言方式」；新坑当场回写（清单是活的）。
 

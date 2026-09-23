@@ -76,6 +76,30 @@ if [ "$QUICK" = 0 ]; then
     echo '  ✗ R5 全新部署被误报本地化修改'; grep -E '本地化|一致' "$TMP/up.log" | head -2; FAIL=1
   fi
 
+  # R12 [v2.6.0]：backlog.sh 账本数据完整性回归（未验拒/同日双卡/影子拦截/5位编号——2026-09-23 审计定规）
+  OWD_R12="$(pwd)"; cd "$D"
+  BS="ai-dev-guide/scripts/backlog.sh"; CK="ai-dev-guide/scripts/check.sh"
+  bash "$BS" journal new r12-ledger >/dev/null 2>&1 || true
+  bash "$BS" add "R12卡A" "s" -p 1 >/dev/null 2>&1
+  bash "$BS" add "R12卡B" "s" -p 1 >/dev/null 2>&1
+  A=$(grep -E '^- \[' backlog.md | head -1 | grep -oE '#[0-9]+' | tr -d '#')
+  B=$(grep -E '^- \[' backlog.md | sed -n 2p | grep -oE '#[0-9]+' | tr -d '#')
+  if bash "$BS" migrate "$A" >/dev/null 2>&1; then echo "  ✗ R12a 未验卡无 -r 未被拒绝"; FAIL=1; else echo "  ✓ R12a 未验卡无 -r 被拒"; fi
+  bash "$BS" status "$A" verify >/dev/null 2>&1; bash "$BS" migrate "$A" >/dev/null 2>&1
+  bash "$BS" status "$B" verify >/dev/null 2>&1; bash "$BS" migrate "$B" >/dev/null 2>&1
+  J=$(ls docs/journal/*.md | grep -v README | tail -1)
+  if grep -q "#$A" "$J" && grep -q "#$B" "$J"; then echo "  ✓ R12b 同日双卡正文俱在"; else echo "  ✗ R12b 同日迁移丢卡"; FAIL=1; fi
+  cp backlog.md "$TMP/bl.bak"
+  printf -- '- [X] **#9998 影子**
+' >> backlog.md
+  if bash "$CK" --deployed . --only 9 >/dev/null 2>&1; then echo "  ✗ R12c 影子[X]未被拦截"; FAIL=1; else echo "  ✓ R12c 影子[X]被门禁9拦截"; fi
+  cp "$TMP/bl.bak" backlog.md
+  printf '#10000 可见性探针
+' >> "$J"
+  if bash "$CK" --deployed . --only 9 >/dev/null 2>&1; then echo "  ✗ R12d 5位编号失明"; FAIL=1; else echo "  ✓ R12d 5位编号计入防撞号"; fi
+  sed -i.bak '/#10000 可见性探针/d' "$J" 2>/dev/null && rm -f "$J.bak"
+  cd "$OWD_R12"
+
   # R6 [v2.4.0]：登记簿四件实例化齐备 + 部署基线存在
   ok6=1
   for f in backlog.md CONTEXT.md docs/ability-domains.md docs/architecture-debt.md ai-dev-guide/.deploy-baseline.txt; do

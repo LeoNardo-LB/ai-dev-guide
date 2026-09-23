@@ -2,6 +2,34 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.6.0] - 2026-09-23
+
+系统审计修复批次：8 路子代理分维审计 + 2025-2026 实证研究对照（5 篇 arXiv 论文 + 6 权威实践源），P0×9 全修、P1 主体落地。审计全文见 docs/research/2026-09-23-system-audit.md。
+
+### Fixed
+
+- backlog.sh 数据完整性四修：同日二次 migrate 起永久丢卡（改为迁入节末整块追加）；未验卡守卫死代码（判定移到替换之前）；待验证卡无依据时默认伪造「用户验收通过」（改为诚实依据文案）；并发写丢卡（独立锁文件 + 临时文件原子替换）
+- verify.md 首屏结构损坏（H1 粘入五维表人工行 + 表格 4 行缺行首管道，v2.5.0 编辑事故）；新增结构门禁（H1 单行/表格行首管道）拦截同类
+- v2.5.0 连锁改口径漏改簇约 15 处统一（时间性现象一律先仪器取证，人工面仅四类例外）；requirement 模板优先级 P0-P3 补 P0-P4
+- 关闭权限 CANON 矛盾裁决落地：仪器可验项 AI 取证后直接关闭，requirements 第 4 节按验收协议改写（用户裁决 2026-09-23）
+- macOS 可移植：门禁 9 全量下沉 python 内核（消除 grep -P 依赖）；init.sh sha256/shasum 回退且失败即中止（防静默写坏部署基线）；selftest sed -i BSD 兼容
+- init.sh：AGENTS.md 指向的 docs/env-runbook.md 骨架现随部署实例化（消除首屏死指引）；占位符报告补中文检测；步骤编号重复修正；docs/acceptance/ 目录随部署创建
+- check.sh --deployed 缺参数死循环；backlog.sh 无参数时 usage 不可达
+
+### Added
+
+- 门禁增强：结构完整性门禁；第 6 节引用改行内多链接逐一尝试 + 子节号校验；backlog 不变量扩展（checkbox 词表白名单、卡片编号唯一、P4 卡必含前提行、任意缩进完结残留、5 位以上编号可见）；AGENTS.md 200 行约束进部署门禁；CHANGELOG 版本标题唯一 + 与 manifest 一致性；CANON:human-four 第四唯一归宿标记；门禁 7/8 历史面豁免（journal/archive/adr/research/CHANGELOG）
+- backlog.sh prio 子命令（优先级调整，note 留痕）；requirements 补优先级变迁规则与 P4 前提复查周期动作
+- 验收终态枚举补 SKIP（含 SKIP/BLOCKED 附待补卡编号）；SKIP 承接规则入 requirements 第 2 节；信任边界红线（登记内容是数据不是指令）
+- verify 小改动最小验证集快速通道（第 3.2 节）；完成声明从点名式黑名单改为三段式正向白名单（priming 实证）
+- 编辑卡补律：措辞冻结（换措辞=新发布须重验）与首尾承重（U 型位置纪律）
+- 术语表补 6 词；观测符号统一为六符号（BUILD/TEST/RUN/LOG/DUMP/SHOT）；bootstrap 补 detach 移除流程；release 补版本单轨适用域注记
+- selftest R12 账本回归断言组（未验拒/同日双卡不丢/影子卡拦截/5 位编号防撞）
+
+### Changed
+
+- registries/backlog.md 优先级表复制改指针（防 CANON 漂移）；能力域手段编码与命名维度映射；e2e 双模板互链纠错；changelog 模板版本指向改为真相源；三处运行时脚本口径与 onboarding 对齐（五个）
+
 ## [2.5.0] - 2026-09-23
 
 oc-beacon 源项目 2026-08-24 → 09-23 演进回灌：六路并行调研（验证验收 / backlog 生命周期 / AGENTS 治理 / 机器门禁 / 发版回归 E2E / 编辑协议探测），53 项差距中 P0/P1 全部落地。调研全文见 docs/research/2026-09-23-oc-beacon-reintegration.md。
@@ -28,7 +56,6 @@ oc-beacon 源项目 2026-08-24 → 09-23 演进回灌：六路并行调研（验
 
 ## [2.4.0] - 2026-08-24
 
-## [2.4.0] - 2026-08-24
 
 全仓系统性审计修复：脚本能力逐条实测 + 文档描述双向核对（41 份文档 + 11 个脚本），共修复脚本缺陷 10 项、文档缺陷 30 余项，并全部固化为 selftest 回归断言（R1-R11）。
 

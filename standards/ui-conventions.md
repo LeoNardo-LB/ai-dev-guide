@@ -81,7 +81,7 @@
 | 2 | 渐进披露：次要信息折叠，首屏只呈现核心 | 信息过载 |
 | 3 | 文案动词开头、省略主语、不技术腔 | 行动意图不清 |
 | 4 | 避免模式打断：能就地编辑不弹窗 | 打断操作流 |
-| 5 | 时间性现象（闪烁/动画/布局跳动/计时）自动化无法覆盖，必须列入人工验证清单（[verify.md](../workflows/verify.md) §8） | 时间性缺陷带病发版 |
+| 5 | 时间性现象（闪烁/动画/布局跳动/计时）先仪器取证（录屏逐帧/像素采样，[evidence.md](../workflows/evidence.md) 第 5 节）；仅四类例外入人工清单（[verify.md](../workflows/verify.md) 第 8 节） | 时间性缺陷带病发版 |
 | 6 | 需在配置变更/进程恢复后保留的状态用框架状态保存机制 | 状态丢失 |
 | 7 | 流式/高频更新批量刷新而非逐条重组；流式文本用保持状态的解析器 | 振荡、闪烁、卡顿 |
 | 8 | 动效可关：尊重系统「减少动效」设置 | 眩晕用户无法使用 |
@@ -124,11 +124,11 @@
 | 6 | 需恢复状态用框架机制；流式批量刷新；动效可关 | §5 |
 | 7 | 触摸目标/语义描述/对比度达标 | §6 |
 | 8 | 用户可见文案全部在资源文件，翻译同步，检查脚本通过 | §7 |
-| 9 | 时间性现象已列入人工验证清单 | [verify.md](../workflows/verify.md) §8 |
+| 9 | 时间性现象已按判定次序处理（先仪器取证；四类例外入人工清单） | [verify.md](../workflows/verify.md) 第 8 节 |
 
 ## Related
 
-- 时间性现象人工验证：[../workflows/verify.md](../workflows/verify.md) §8
+- 时间性现象判定：仪器优先，四类例外人工——[../workflows/verify.md](../workflows/verify.md) 第 8 节
 - 清单模板：[../templates/manual-ui-checklist.md](../templates/manual-ui-checklist.md)
 - 可靠性（错误态设计依据）：[reliability.md](./reliability.md)
 - 栈相关令牌示例：[../stack/android-kotlin-example.md](../stack/android-kotlin-example.md)

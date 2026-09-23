@@ -1,6 +1,6 @@
 # 调查与回归报告模板（Research Report · Regression Report）
 
-> 一份文件承载两种用途，按需取用：Part A 调查报告（单 bug 深挖 / 修复质量审计 / 主题研究，一 bug 一份）+ Part B 回归报告（一次回归走查一份）。
+> 一份文件承载三种用途，按需取用：Part A 调查报告（单 bug 深挖 / 修复质量审计 / 主题研究，一 bug 一份）+ Part B 回归报告（一次回归走查一份）+ Part C 多路调研合成（多路检索收敛表与勘误台账）。
 
 ## Use when
 

@@ -62,7 +62,7 @@
 
 1. 全量单测：`<全量测试命令>` → 全部通过、无回归
 2. 构建：`<打包命令>` → 产物产出
-3. UI 验证：按 spec「验证要点」列出的本设计特有验证点逐项确认（时间性现象必须人工验证，见 [../workflows/verify.md](../workflows/verify.md)）
+3. UI 验证：按 spec「验证要点」列出的本设计特有验证点逐项确认（时间性现象先仪器取证，人工面仅四类例外，见 [../workflows/verify.md](../workflows/verify.md)）
 4. 回写 backlog：更新对应条目的 checkbox 状态（见 [../workflows/requirements.md](../workflows/requirements.md) §5 完结迁移）
 
 ### 计划变更

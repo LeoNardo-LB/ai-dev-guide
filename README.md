@@ -26,7 +26,7 @@
 | 平面 | 内容 | 去向 |
 |------|------|------|
 | deployed | standards + workflows + bootstrap + stack + templates + registries + meta/edit-card | 复制进目标项目 |
-| source | meta 三份治理文档 + scripts + manifest + specs + docs | 仅源仓 |
+| source | meta 三份治理文档 + 治理脚本（init/upgrade/gen-index/selftest）+ manifest + specs + docs | 仅源仓（运行时五脚本随部署） |
 
 ## 文档总览（manifest 生成）
 
@@ -58,7 +58,7 @@
 | deployed | `templates/e2e-runbook.md` | 🟡 | E2E 实操记录（逐轮追加/差异归属） |
 | deployed | `templates/env-runbook.md` | 🟡 | 测试环境 runbook 骨架（环境矩阵/标准入口/装包通道/坑清单） |
 | deployed | `templates/journal-entry.md` | 🟡 | 批次日志骨架（开工时创建；证据 append-only 归宿） |
-| deployed | `templates/manual-ui-checklist.md` | 🟡 | 人工验证清单（时间性现象） |
+| deployed | `templates/manual-ui-checklist.md` | 🟡 | 人工验证清单（仅四类例外；时间性现象先仪器取证） |
 | deployed | `templates/plan.md` | 🟡 | 实施计划骨架（Task/Steps/精确签名/TDD） |
 | deployed | `templates/release-notes.md` | 🟡 | 发版说明骨架（面向用户公告） |
 | deployed | `templates/release-runbook.md` | 🟢 | 手动发版步骤（发版脚本不可用时逐项执行） |

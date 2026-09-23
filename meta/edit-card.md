@@ -11,10 +11,12 @@
 | # | 律 | 判据 |
 |---|----|------|
 | 1 | 命题保全 | 删改段落前枚举事实子句（行为/条件/情态/否定保证/后果），每个子句必须存活；字数变少不是改进 |
-| 2 | 单一真相源 | 一个含义只在一处定义；重复出现的表打 CANON 标记；命令用符号（BUILD/TEST/RUN，定义在 [stack-profile.md](../stack/stack-profile.md) §5） |
+| 2 | 单一真相源 | 一个含义只在一处定义；重复出现的表打 CANON 标记；命令用六符号（BUILD/TEST/RUN/LOG/DUMP/SHOT，定义在 [stack-profile.md](../stack/stack-profile.md) 第 5 节） |
 | 3 | 现在时态 | 规则正文写「是什么/要做什么」；变更历史入 journal/CHANGELOG，不写 used-to/no-longer |
 | 4 | 指针三要素 | 引用任何文档必须带级别 + 用途 + Use when（首词 = 触发动词） |
 | 5 | 同 commit 更新 | 改代码的同一 commit 更新文档；完结 backlog 卡片当场迁移入 journal（顶层零完结残留） |
+
+补律（2026-09-23 审计定规）：**措辞冻结**——定版指令禁同义改写；换措辞 = 一次新发布，须过全部门禁重验（细微措辞变化可致指令遵循可靠率显著下降—— cousin-prompt 实证）。**首尾承重**——入口/速记文件的关键规则置于文件开头或结尾，长表与低频内容放中部（长上下文中部注意力衰减——Lost in the Middle 实证）。
 
 ## AGENTS.md 准入速记（改目标项目 AGENTS.md 前过一遍）
 

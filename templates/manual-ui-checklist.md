@@ -26,7 +26,7 @@
 
 出现时间性现象（闪烁 Flicker · 过渡 Transition · 计时重置 Timer Reset · 布局跳动 Layout Jump · 滚动抖动 Scroll Jitter · 蒙版揭盖 Mask Reveal）→ **先仪器取证**（录屏逐帧 + 像素采样，[evidence.md](../workflows/evidence.md) §5）；仅以下四类进本清单请用户验证（[verify.md](../workflows/verify.md) §8）：
 
-① 真手指连续手势/体感 · ② 需用户凭据/跨设备 · ③ 数日级观察 · ④ 主观观感拍板——每项须标注类别与「为何仪器不可行」。
+① 真手指连续手势/体感 · ② 需用户凭据/跨设备 · ③ 数日级观察 · ④ 主观观感拍板（四类枚举唯一归宿：[verify.md](../workflows/verify.md) 第 8 节）——每项须标注类别与「为何仪器不可行」。
 
 ## 清单治理
 

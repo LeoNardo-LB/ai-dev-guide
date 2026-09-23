@@ -22,7 +22,7 @@
 | 平面 | 内容 | 去向 |
 |------|------|------|
 | deployed | 内容文档（standards/workflows/bootstrap）+ 栈档案 + 模板 + 登记簿骨架 + 编辑卡 | 复制进目标项目 |
-| source | meta/ 治理三份（本文件/governance/writing-standards）+ scripts + manifest + specs + docs | 只留源仓 |
+| source | meta/ 治理三份 + 治理脚本（init/upgrade/gen-index/selftest）+ manifest + specs + docs | 只留源仓（运行时五脚本随部署） |
 
 目标项目里修改文档的纪律由部署面的 [edit-card.md](./edit-card.md)（编辑卡）承载；完整治理规范按需从源仓复制。
 
@@ -83,7 +83,7 @@
 | t-e2e-runbook | templates/e2e-runbook.md | template | deployed | SHOULD | core | E2E 实操记录（逐轮追加/差异归属） | 执行 E2E 测试时 |
 | t-env-runbook | templates/env-runbook.md | template | deployed | SHOULD | core | 测试环境 runbook 骨架（环境矩阵/标准入口/装包通道/坑清单） | 建立测试环境手册、真机或集成环境测试前 |
 | t-journal-entry | templates/journal-entry.md | template | deployed | SHOULD | core | 批次日志骨架（开工时创建；证据 append-only 归宿） | 开启新工作批次时 |
-| t-ui-checklist | templates/manual-ui-checklist.md | template | deployed | SHOULD | ui | 人工验证清单（时间性现象） | UI 涉及动画/闪烁/计时类现象时 |
+| t-ui-checklist | templates/manual-ui-checklist.md | template | deployed | SHOULD | ui | 人工验证清单（仅四类例外；时间性现象先仪器取证） | UI 涉及四类人工项或需用户确认观感时 |
 | t-plan | templates/plan.md | template | deployed | SHOULD | core | 实施计划骨架（Task/Steps/精确签名/TDD） | 大改动实施前 |
 | t-release-notes | templates/release-notes.md | template | deployed | SHOULD | core | 发版说明骨架（面向用户公告） | 撰写发版说明时 |
 | t-release-runbook | templates/release-runbook.md | template | deployed | MAY | core | 手动发版步骤（发版脚本不可用时逐项执行） | 手动发版时 |
@@ -125,6 +125,12 @@
 | 受端效果 | 成功的证据标准：执行/恢复/UI 状态变化；发起端返回 ok 不构成证据 |
 | 独占资源 | 同一时刻只允许一个执行流操作的物理/共享资源（设备/共享环境/构建目录） |
 | 基线冻结 | 重构/迁移前对现状行为的留档（环境+commit+判定矩阵），迁移期间语义不变的对照物 |
+| 时间性现象 | 闪烁/动画/计时/布局跳动/滚动抖动等随时间演化的 UI 现象——判定次序：先仪器取证（帧级/像素），人工面仅四类例外 |
+| 关闭权限 | 卡片关闭权的分类判定：仪器可验项 AI 取证后直接关闭；人工项（四类）用户确认后关闭（归宿：acceptance 第 1 节） |
+| 三步验收法 | 生成 checklist → 纯净上下文审查 → 新纯净上下文执行（执行/认知分离，只观测不分析） |
+| 纯净上下文 | 不含主会话历史的新建 agent 上下文（审查/执行环节专用，防偏见与预设污染） |
+| 命名维度 | verify 第 2 节的五个全系统统一验证维度（构建/测试/运行时/遥测/人工），不另设编号 |
+| 能力域 | 面向回归的功能域划分（一域一张回归清单；登记与维护见 ability-domains 模板） |
 | 平面 | 文档的部署属性：deployed（随项目复制）/ source（仅源仓维护） |
 
 ## 7. 文档生命周期
@@ -138,7 +144,7 @@
 
 ## 8. 版本与自举
 
-- 版本号记录于 manifest.yaml system.version 与 CHANGELOG.md（用自家 [changelog.md](../templates/changelog.md) 模板维护）
+- 版本号记录于 manifest.yaml system.version 与 CHANGELOG.md（用自家 [changelog.md](../templates/changelog.md) 模板维护）。蓝本自身为单仓文档系统（无构建产物）：用 manifest version + git tag 单轨，不使用相位阶梯；阶梯约束部署面项目
 - 本系统的设计决策记录于 docs/adr/（用自家 [adr.md](../templates/adr.md) 模板）
 - 重构与开发批次记录于 docs/journal/（用自家 [journal-entry.md](../templates/journal-entry.md) 模板）——系统用自己的模板管理自己
 
