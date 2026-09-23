@@ -48,7 +48,7 @@
 | 6 | §引用可解析（目标须有对应编号标题） | 死引用 |
 | 7 | CANON 唯一归宿（优先级/状态机/补丁三件事各只存在一份） | 重复表分叉 |
 | 8 | 术语已定义 + 退役词汇禁用（旧编号/旧仓库名） | 魔法词、词汇分叉 |
-| 9 | backlog 不变量（部署模式：零完结残留/计数器/悬空链接/节序） | 登记簿膨胀失控 |
+| 9 | backlog 不变量（部署模式：零完结残留/计数器/悬空链接/P0-P4 节序/卡片只在 Pn 节内） | 登记簿膨胀失控 |
 | 10 | journal/specs 命名规约（部署模式） | 批次文件不可排序 |
 
 执行方式：本地推送前与 CI（.github/workflows/check.yml）跑同一条命令 scripts/selftest.sh——语法 + 敏感信息扫描 + 十门禁 + 部署演练 + 版本阶梯演练一体；本地通过 = CI 通过，杜绝「本地绿 CI 红」的分叉。
@@ -71,14 +71,17 @@
 | test-strategy | standards/test-strategy.md | content | deployed | SHOULD | core | 测试策略、各层覆盖、Mock 纪律 | 编写测试、决定层级与范围时 |
 | ui-conventions | standards/ui-conventions.md | content | deployed | SHOULD | ui | UI 统一性：框架忠诚/设计令牌/状态展示/本地化 | 编写/修改 UI 前 |
 | t-ability-domains | templates/ability-domains.md | template | deployed | SHOULD | core | 能力域清单骨架（四件套 + 维护规则） | 建立/维护能力域清单时 |
+| t-acceptance-checklist | templates/acceptance-checklist.md | template | deployed | SHOULD | core | 验收清单骨架（一卡一份；item 五字段 + 实测记录区） | 生成验收 checklist 时 |
 | t-adr | templates/adr.md | template | deployed | MAY | core | 架构决策记录骨架 | 记录架构决策时 |
 | t-backlog-entry | templates/backlog-entry.md | template | deployed | SHOULD | core | 待办卡片格式（≤3 行索引卡 + 机械不变量） | 登记待办前 |
+| t-baseline-freeze | templates/baseline-freeze.md | template | deployed | MAY | core | 行为基线冻结骨架（重构迁移前现状留档） | 开工大重构或迁移、需冻结行为基线时 |
 | t-bug-record | templates/bug-record.md | template | deployed | SHOULD | core | Bug 修复记录（三层分类 + 判定三问结论） | 修复完成随 commit 附记录时 |
 | t-changelog | templates/changelog.md | template | deployed | MAY | core | CHANGELOG 骨架（Keep a Changelog） | 更新 CHANGELOG 时 |
 | t-context | templates/context.md | template | deployed | SHOULD | core | 项目领域术语表骨架（CONTEXT.md，定义+Avoid） | 初始化项目术语表、统一领域用语时 |
 | t-debt-entry | templates/debt-entry.md | template | deployed | SHOULD | core | 债务条目格式（状态词表唯一归宿） | 登记债务时 |
 | t-e2e-plan | templates/e2e-plan.md | template | deployed | SHOULD | core | E2E 期望文档（测什么/期望什么） | 大型 E2E 测试设计时 |
 | t-e2e-runbook | templates/e2e-runbook.md | template | deployed | SHOULD | core | E2E 实操记录（逐轮追加/差异归属） | 执行 E2E 测试时 |
+| t-env-runbook | templates/env-runbook.md | template | deployed | SHOULD | core | 测试环境 runbook 骨架（环境矩阵/标准入口/装包通道/坑清单） | 建立测试环境手册、真机或集成环境测试前 |
 | t-journal-entry | templates/journal-entry.md | template | deployed | SHOULD | core | 批次日志骨架（开工时创建；证据 append-only 归宿） | 开启新工作批次时 |
 | t-ui-checklist | templates/manual-ui-checklist.md | template | deployed | SHOULD | ui | 人工验证清单（时间性现象） | UI 涉及动画/闪烁/计时类现象时 |
 | t-plan | templates/plan.md | template | deployed | SHOULD | core | 实施计划骨架（Task/Steps/精确签名/TDD） | 大改动实施前 |
@@ -88,6 +91,7 @@
 | t-research-report | templates/research-report.md | template | deployed | SHOULD | core | 调查报告 A / 回归报告 B | bug 深挖、回归走查输出时 |
 | t-spec | templates/spec.md | template | deployed | SHOULD | core | 设计文档骨架（事实/推论分离防幻觉；active→archive 生命周期） | 大改动设计前 |
 | t-verify-node | templates/verification-node.md | template | deployed | MAY | core | 验证节点（环境/步骤/断言/证据可复现清单） | 组织多步验证证据时 |
+| acceptance | workflows/acceptance.md | content | deployed | SHOULD | core | 交付验收三步法与关闭权限（仪器优先判定、四类人工例外、资源独占、SKIP 语义） | 验收 backlog 卡片、判定走仪器还是人工时 |
 | bug | workflows/bug.md | content | deployed | MUST | core | Bug 分析：根治优先、补丁协议、反模式、模式审计 | 诊断或修复任何 bug 前 |
 | debt | workflows/debt.md | content | deployed | SHOULD | core | 技术债务登记纪律、偿还流程、grep 检查 | 登记/偿还技术债时 |
 | dev | workflows/dev.md | content | deployed | MUST | core | 开发循环六步、编辑协议、提交规范、并行纪律 | 任何代码编辑任务开始前 |
@@ -116,6 +120,11 @@
 | 未决索引 | backlog 的定位：只含未完结卡片，完结即迁移（门禁 9 强制），不是档案 |
 | 批次 | 一个工作单元（一次登记/修复/调查）的 journal 粒度；开工时创建，证据 append-only 写入 |
 | 降级 | 环境受限时显式标注缺失维度的部分验证；禁止静默降级 |
+| 仪器可验 | 存在可观测仪器（UI 树/像素/日志/数据直查/录屏逐帧）能断言的验证项；判定次序=先穷举仪器再考虑人工 |
+| 四类人工项 | 仪器不可覆盖的人工例外：真手指体感/用户凭据跨设备/数日观察/主观拍板 |
+| 受端效果 | 成功的证据标准：执行/恢复/UI 状态变化；发起端返回 ok 不构成证据 |
+| 独占资源 | 同一时刻只允许一个执行流操作的物理/共享资源（设备/共享环境/构建目录） |
+| 基线冻结 | 重构/迁移前对现状行为的留档（环境+commit+判定矩阵），迁移期间语义不变的对照物 |
 | 平面 | 文档的部署属性：deployed（随项目复制）/ source（仅源仓维护） |
 
 ## 7. 文档生命周期

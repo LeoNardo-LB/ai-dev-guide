@@ -22,9 +22,18 @@
 | 3 | 判定标准 | 可明确判定（全程无跳变/揭盖无闪烁）；禁止「看起来正常」 |
 | 4 | 通用 | 一条验证项只对应一个时间性现象 |
 
-## 现象清单（触发判定）
+## 触发判定（先仪器后人工）
 
-闪烁 Flicker · 动画过渡 Transition · 计时重置 Timer Reset · 布局跳动 Layout Jump · 滚动抖动 Scroll Jitter · 蒙版揭盖 Mask Reveal——出现任一即必须人工验证（[verify.md](../workflows/verify.md) §8）。
+出现时间性现象（闪烁 Flicker · 过渡 Transition · 计时重置 Timer Reset · 布局跳动 Layout Jump · 滚动抖动 Scroll Jitter · 蒙版揭盖 Mask Reveal）→ **先仪器取证**（录屏逐帧 + 像素采样，[evidence.md](../workflows/evidence.md) §5）；仅以下四类进本清单请用户验证（[verify.md](../workflows/verify.md) §8）：
+
+① 真手指连续手势/体感 · ② 需用户凭据/跨设备 · ③ 数日级观察 · ④ 主观观感拍板——每项须标注类别与「为何仪器不可行」。
+
+## 清单治理
+
+| # | 规则 | 违反后果 |
+|---|------|----------|
+| 1 | 按域边界汇总一份清单一次性提交（多卡同域合并），不逐卡打断用户 | 用户被反复打断，清单被搁置 |
+| 2 | 清单是活文档：任何仪器验证覆盖的项（含他卡顺带验证）当场勾销；素材失效换素材或删项 | 已验项重复打扰，清单腐化 |
 
 ## 发版前冒烟走查路径
 
@@ -41,5 +50,6 @@
 
 ## Related
 
-- 人工维度规则（何时必须人工）：[../workflows/verify.md](../workflows/verify.md) §8
+- 人工维度规则（四类例外）：[../workflows/verify.md](../workflows/verify.md) §8
+- 交付验收协议（关闭权限）：[../workflows/acceptance.md](../workflows/acceptance.md)
 - UI 统一性规范：[../standards/ui-conventions.md](../standards/ui-conventions.md)

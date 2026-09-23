@@ -60,6 +60,9 @@
 | 版本变更一律走 scripts/release-version.sh；发版前跑其 validate 子命令 | 手改绕过阶梯校验 |
 | CI 提取不改格式 | CI 解析失败 → 发版中断 |
 | 严禁版本号修改前构建 | 产物内嵌版本与 tag/Release 不一致 |
+| tag 递进链校验：beta tag 存在 ⇒ 同线 dev.N tag 齐全；正式 tag 存在 ⇒ 同线 beta + dev 齐全（validate 可挂 CI） | 跳级/缺环版本流出 |
+| 防回退护栏：版本文件落后于已发布正式版时，禁止产出更小版本号 | 版本号回退，升级链断裂 |
+| 开新线 bump 基准：本线正式 tag → 本线 beta tag → 上一正式版，逐级回溯取第一个存在者 | 基准取错，版本倒退 |
 
 ### 2.3 相位默认策略
 
@@ -87,16 +90,19 @@
 | CI 用 Secrets 注入 | 密钥明文进配置/日志 |
 | Secrets 未配置时构建回退 debug 签名，且全新 runner 每次生成不同 debug keystore → 每次发版签名不同 → 用户升级报「签名冲突」；发版前必须核对 Secrets 齐全 | 用户被迫卸载重装，数据丢失 |
 | 发版后验证产物签名（release 证书而非默认 debug 证书；验证命令见 [stack-profile.md](../stack/stack-profile.md) §6 发布验证行） | 签名错误到用户端才发现 |
+| 更换密钥材料：所有相关 Secrets **同批**重设 + 立即触发构建并验证签名（防半新半旧材料混用事故） | 签名不一致，用户无法升级 |
 
 ## 6. CHANGELOG 与 Release Notes 分工
 
 | 项 | CHANGELOG（[changelog.md](../templates/changelog.md)） | Release Notes（[release-notes.md](../templates/release-notes.md)） |
 |----|-----------|---------------|
 | 更新时机 | 仅正式版 | 每次发版（含预发布） |
-| 范围 | last stable → HEAD | last tag → HEAD |
+| 范围 | last stable → HEAD | 按通道视角：dev 版看上个 dev tag；beta 看 beta tag；晋升（beta→stable）覆盖自上个对外边界以来的全部变化 |
 | 篇幅 | 完整运行记录 | 更短更聚焦的用户公告 |
 
 违反后果：预发布就更新 CHANGELOG → 中间产物噪音污染用户升级决策。
+
+Notes 润色时过一遍 CONTEXT.md 术语表：Avoid 词不进用户公告（术语拦截）。违反后果：用户看到已废弃叫法。
 
 ## 7. 安全与合规检查
 
@@ -129,7 +135,8 @@
 | 6 | CI Secrets 已配置（无 debug 回退） | 签名冲突，用户无法升级 |
 | 7 | 产物签名验证通过（release 证书） | 用户升级失败 |
 | 8 | 默认预发布（用户未明说正式） | 未就绪版本被当稳定版 |
-| 9 | 发版后验证清单全部通过；文档链接门禁（check.sh）通过 | 带病发版 |
+| 9 | tag 递进链完整（§2.2 护栏） | 跳级版本流出 |
+| 10 | 发版后验证清单全部通过；文档链接门禁（check.sh）通过 | 带病发版 |
 
 ## 10. 发版后验证清单
 

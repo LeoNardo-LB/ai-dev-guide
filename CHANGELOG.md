@@ -2,6 +2,32 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.5.0] - 2026-09-23
+
+oc-beacon 源项目 2026-08-24 → 09-23 演进回灌：六路并行调研（验证验收 / backlog 生命周期 / AGENTS 治理 / 机器门禁 / 发版回归 E2E / 编辑协议探测），53 项差距中 P0/P1 全部落地。调研全文见 docs/research/2026-09-23-oc-beacon-reintegration.md。
+
+### Added
+
+- workflows/acceptance.md：交付验收协议——关闭权限（仪器优先判定 + 四类人工例外：体感/凭据/长观察/主观拍板）、三步验收法（生成→纯净审查→纯净执行）、受端效果证据、资源独占串行、SKIP 语义、活清单治理
+- scripts/backlog.sh：账本脚本（add/note/status/migrate/journal new/append），卡片区与 journal 禁手工直编；部署面第 5 个运行时脚本，init.sh 已纳入部署清单
+- templates/acceptance-checklist.md（一卡一份验收清单骨架）、templates/env-runbook.md（测试环境 runbook：环境矩阵/标准入口/装包通道/坑清单）、templates/baseline-freeze.md（行为基线冻结）
+- verify.md：能力分层 E2E 阶梯（活下来层/功能层/完整旅程/性能流；冒烟档=阶梯底部固定清单）、验收脚本化与 SKIP 规则
+- evidence.md：单一通道不做最终判定 + 仪器盲区登记制、像素取证、视觉模型纪律、帧级取证、受端效果红线、连续日志档、动态定位铁律、执行/认知分离（BLOCKED 传播）、独占资源串行
+- architecture.md：承重规则「具名反例」字段 + 机器执行节（窄化/豁免/报错回链/可追溯/baseline 引入——文档规则→机器门禁转化纪律）
+- requirements.md：P4 优先级（外部前提阻塞，卡内必含「前提」行）、反馈归卡、裁决记录（最新为准+回写）、migrate 防呆、新问题入队量化例外
+- release.md：tag 递进链校验、防回退护栏、开新线基准、密钥同批重设、Notes 通道范围+术语拦截
+- edit-card.md：AGENTS.md 准入速记（部署面的规则准入与复审卡）
+- journal-entry.md：取证链锚点（轮次/GREEN-RED/用户裁决前缀/before-after 证据对/遗留如实）；spec.md：用户故事（验证视角）/测试决策/范围外/约束行；research-report.md：Part C 多路调研合成（00-synthesis 收敛表+勘误台账）；context.md：豁免边界+agent 使用纪律；ability-domains：已知误判陷阱登记；manual-ui-checklist：先仪器后人工+清单治理
+- new-batch.sh：批次名宽容转写（中文/空格/下划线→kebab）
+
+### Changed
+
+- verify.md 第 8 节人工维度方向性重构：由「六种时间性现象=人工」改为「仪器优先 + 四类人工例外」——时间性现象可量化面走录屏逐帧/像素取证（同步 manual-ui-checklist / regression / AGENTS 模板口径）
+- check.sh 门禁 9 扩展：P0-P4 节序 + 卡片只许在 Pn 节内；system-design 门禁映射与术语表（仪器可验/四类人工项/受端效果/独占资源/基线冻结）同步
+- stack-profile.md：观测命令符号位（LOG/DUMP/SHOT）、四档超时分档、门禁引入模式（存量豁免只拦新增）、禁并发构建
+
+## [2.4.0] - 2026-08-24
+
 ## [2.4.0] - 2026-08-24
 
 全仓系统性审计修复：脚本能力逐条实测 + 文档描述双向核对（41 份文档 + 11 个脚本），共修复脚本缺陷 10 项、文档缺陷 30 余项，并全部固化为 selftest 回归断言（R1-R11）。

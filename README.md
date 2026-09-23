@@ -46,14 +46,17 @@
 | deployed | `standards/test-strategy.md` | 🟡 | 测试策略、各层覆盖、Mock 纪律 |
 | deployed | `standards/ui-conventions.md` | 🟡 | UI 统一性：框架忠诚/设计令牌/状态展示/本地化 |
 | deployed | `templates/ability-domains.md` | 🟡 | 能力域清单骨架（四件套 + 维护规则） |
+| deployed | `templates/acceptance-checklist.md` | 🟡 | 验收清单骨架（一卡一份；item 五字段 + 实测记录区） |
 | deployed | `templates/adr.md` | 🟢 | 架构决策记录骨架 |
 | deployed | `templates/backlog-entry.md` | 🟡 | 待办卡片格式（≤3 行索引卡 + 机械不变量） |
+| deployed | `templates/baseline-freeze.md` | 🟢 | 行为基线冻结骨架（重构迁移前现状留档） |
 | deployed | `templates/bug-record.md` | 🟡 | Bug 修复记录（三层分类 + 判定三问结论） |
 | deployed | `templates/changelog.md` | 🟢 | CHANGELOG 骨架（Keep a Changelog） |
 | deployed | `templates/context.md` | 🟡 | 项目领域术语表骨架（CONTEXT.md，定义+Avoid） |
 | deployed | `templates/debt-entry.md` | 🟡 | 债务条目格式（状态词表唯一归宿） |
 | deployed | `templates/e2e-plan.md` | 🟡 | E2E 期望文档（测什么/期望什么） |
 | deployed | `templates/e2e-runbook.md` | 🟡 | E2E 实操记录（逐轮追加/差异归属） |
+| deployed | `templates/env-runbook.md` | 🟡 | 测试环境 runbook 骨架（环境矩阵/标准入口/装包通道/坑清单） |
 | deployed | `templates/journal-entry.md` | 🟡 | 批次日志骨架（开工时创建；证据 append-only 归宿） |
 | deployed | `templates/manual-ui-checklist.md` | 🟡 | 人工验证清单（时间性现象） |
 | deployed | `templates/plan.md` | 🟡 | 实施计划骨架（Task/Steps/精确签名/TDD） |
@@ -63,6 +66,7 @@
 | deployed | `templates/research-report.md` | 🟡 | 调查报告 A / 回归报告 B |
 | deployed | `templates/spec.md` | 🟡 | 设计文档骨架（事实/推论分离防幻觉；active→archive 生命周期） |
 | deployed | `templates/verification-node.md` | 🟢 | 验证节点（环境/步骤/断言/证据可复现清单） |
+| deployed | `workflows/acceptance.md` | 🟡 | 交付验收三步法与关闭权限（仪器优先判定、四类人工例外、资源独占、SKIP 语义） |
 | deployed | `workflows/bug.md` | 🔴 | Bug 分析：根治优先、补丁协议、反模式、模式审计 |
 | deployed | `workflows/debt.md` | 🟡 | 技术债务登记纪律、偿还流程、grep 检查 |
 | deployed | `workflows/dev.md` | 🔴 | 开发循环六步、编辑协议、提交规范、并行纪律 |

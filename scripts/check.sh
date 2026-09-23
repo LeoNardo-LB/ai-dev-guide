@@ -147,8 +147,12 @@ if want 9; then mark 9
     if [ -n "$DANGLING" ]; then bad 9 "悬空链接：$DANGLING"; else ok 9 "卡片链接全部存在"; fi
     NA=$(grep -c 'docs/archive/' backlog.md || true)
     if [ "$NA" -gt 0 ]; then bad 9 "backlog 含 $NA 处 archive 引用"; else ok 9 "零 archive 引用"; fi
-    SECS=$(grep '^## P[0-3] ' backlog.md | awk '{print substr($2,1,2)}' | tr -d '\n')
-    if [ "$SECS" = "P0P1P2P3" ]; then ok 9 "P0-P3 节有序唯一"; else bad 9 "P 节异常: '$SECS'"; fi
+    SECS=$(grep '^## P[0-4] ' backlog.md | awk '{print substr($2,1,2)}' | tr -d '\n')
+    if [ "$SECS" = "P0P1P2P3P4" ]; then ok 9 "P0-P4 节有序唯一"; else bad 9 "P 节异常: '$SECS'"; fi
+    FIRSTP=$(grep -n '^## P[0-4] ' backlog.md | head -1 | cut -d: -f1)
+    CARDS=$(grep -nF -- "- [" backlog.md | cut -d: -f1 | while read -r n; do [ -n "$FIRSTP" ] && [ "$n" -lt "$FIRSTP" ] && echo "$n"; done)
+    if [ -n "$CARDS" ]; then bad 9 "卡片出现在 P 节之外（表头区）：行 $CARDS"; else ok 9 "卡片均在 P0-P4 节内"; fi
+
     L=$(wc -l < backlog.md)
     if [ "$L" -gt 250 ]; then warn 9 "backlog $L 行 > 250——考虑迁移"; else ok 9 "backlog $L 行 ≤ 250"; fi
   elif [ "$MODE" = "deployed" ]; then

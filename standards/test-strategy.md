@@ -92,6 +92,14 @@ TDD 的产出物 = 回归测试 + 明确行为契约；不用 TDD 的改动仍�
 | 纯重构（行为不变） | 依赖既有测试（以既有测试全绿为证） |
 | 文档/配置 | 不配测试 |
 
+## 7. 测试环境选择
+
+| # | 规则 | 违反后果 |
+|---|------|----------|
+| 1 | 验收与回归优先在**真实目标环境**执行；后备环境（模拟器/容器/staging）只作补充，须列明不覆盖的真实面 | 后备全绿掩盖真实环境问题 |
+| 2 | 环境矩阵、标准入口、每轮重置纪律登记于 docs/env-runbook.md（骨架：[env-runbook.md](../templates/env-runbook.md)） | 起点不确定，证据不可比 |
+| 3 | 后备环境前置不满足 → 记 SKIP + 原因（[acceptance.md](../workflows/acceptance.md) §7），不硬跑 | 无效证据混入结论 |
+
 ## Related
 
 - 完成验证：[../workflows/verify.md](../workflows/verify.md)
