@@ -123,3 +123,5 @@
 - 六路子代理报告全文见本批次 journal：docs/journal/2026-09-23-oc-beacon-reintegration.md。
 - 源侧关键文件：AGENTS.md、CONTEXT.md、backlog.md、docs/{verification,ai-acceptance-workflow,agents-file-design,probing,device-testing,release-workflow,regression-guide,numbering-charter,chatscreen-editing-protocol,debug-channel}.md、docs/agents/{domain,issue-tracker,skills,triage-labels}.md、lint-checks/src/main/kotlin/dev/leonardo/ocbeacon/lintrules/*.kt、scripts/{backlog.sh,backlog-check.sh,backlog-new-batch.sh,debug-entry.sh,e2e-acceptance-dsh.sh}.sh、maestro/README.md、docs/journal/2026-09-22-423-prerendercoordinator.md、docs/research/pre-render-coordinator/、docs/specs/2026-09-23-427-step-group-slicing-windowing.md。
 - 蓝本侧全部 41 份文档与 11 个脚本已逐一核对。
+
+> 复审勘误（2026-09-23 系统审计批次）：本文中「verify.md §3.2」的引用在 v2.6.0 重编号后失效（原独立性判定现为第 3.3 节，第 3.2 节已是小改动快速通道）——历史存档不改写，现行引用请以 workflows/verify.md 现节序为准。

@@ -101,4 +101,4 @@
 
 - 发版权威指南（版本/构建/签名/发布）：[../workflows/release.md](../workflows/release.md)
 - CHANGELOG 模板（正式版完整记录）：[./changelog.md](./changelog.md)
-- 构建命令与超时：[../stack/android-kotlin-example.md](../stack/android-kotlin-example.md)
+- 构建命令与超时唯一真相源：[../stack/stack-profile.md](../stack/stack-profile.md) 第 5 节

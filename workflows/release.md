@@ -110,7 +110,7 @@ Notes 润色时过一遍 CONTEXT.md 术语表：Avoid 词不进用户公告（�
 
 ## 7. 安全与合规检查
 
-发版前逐项核对；具体命令/配置按栈见 [android-kotlin-example.md](../stack/android-kotlin-example.md)：
+发版前逐项核对；具体命令/配置唯一真相源：[stack-profile.md](../stack/stack-profile.md) 第 5/6 节（范例文件非真相源）：
 
 | # | 检查项 | 违反后果 |
 |---|--------|----------|

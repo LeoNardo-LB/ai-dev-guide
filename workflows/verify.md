@@ -77,7 +77,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 | ❌ 无效交叉 | 两张不同时刻截图（同属运行时，单维度） |
 | ❌ 无效交叉 | 代码检查 + 同一次编译输出：可证「编译通过」，不可证「功能正确」 |
 
-### 3.3 无法交叉时的处理
+### 3.4 无法交叉时的处理
 
 | 场景 | 处理 |
 |------|------|
@@ -126,7 +126,7 @@ NO COMPLETION CLAIMS WITHOUT FRESH VERIFICATION EVIDENCE
 |---|------|----------|
 | 1 | flow 全自动可跑（禁 manual 标记转人工）；外部依赖用条件等待优雅降级 | 自动化名存实亡 |
 | 2 | 验收优先脚本化为确定性门禁（断言走仪器通道）；截图仅抽查归档，不作门禁输入 | 门禁随截图主观化 |
-| 3 | 前置不满足显式记 SKIP + 原因（[acceptance.md](./acceptance.md) §7），禁止 FAIL 糊弄或勉强跑 | 「没测」伪装成「失败」 |
+| 3 | 前置不满足显式记 SKIP + 原因（[acceptance.md](./acceptance.md) 第 7 节），禁止 FAIL 糊弄或勉强跑。边界：验证**过程**中环境受限 = 降级（第 7 节，部分验证）；验收 checklist **执行**时前置不满足 = SKIP（P2 待补卡） | 「没测」伪装成「失败」 |
 | 4 | 测试环境/入口/重置纪律见 docs/env-runbook.md（骨架：[env-runbook.md](../templates/env-runbook.md)） | 起点不确定，证据不可比 |
 
 回归策略：变更相关 flow 必跑 + 冒烟档全跑 + 全量兜底；flow 清单由项目按能力域维护（清单模板：[templates/ability-domains.md](../templates/ability-domains.md)）。

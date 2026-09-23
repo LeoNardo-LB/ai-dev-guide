@@ -6,7 +6,7 @@
 #   check.sh --deployed <dir>   部署模式（在已部署的目标项目根运行）
 #   check.sh --only 1,5,6       只跑指定门禁
 #   check.sh --skip 9,10        跳过指定门禁
-# 本脚本编排 + bash 原生门禁（7/8/10）；1/2/4/6/9 的复杂校验在 _gates.py。
+# 本脚本编排 + bash 原生门禁（7/8/10）；1/2/4/6/9 的复杂校验在 _gates.py，3 在 _ph_gate.py，5 为 gen-index --check。
 # 全部实现无 GNU grep -P 依赖（macOS/BSD 可移植——2026-09-23 审计 U-P0-2）。
 # 历史面豁免：specs/、docs/journal/、docs/archive/、docs/adr/、docs/research/、CHANGELOG.md
 #   允许出现旧词汇/旧路径/CANON 引用（变更故事的合法归宿）。
@@ -125,10 +125,10 @@ fi
 
 # ---------- 门禁 8：术语与禁用词 ----------
 if want 8; then mark 8
-  BANNED=$(grep -rn '维度[ ]*[1-5]' --include='*.md' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG' | head -5 || true)
-  BANNED2=$(grep -rn 'D[0-4][ ]*维度' --include='*.md' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG' | head -5 || true)
-  BANNED3=$(grep -rn 'ai-spec/ai-dev-docs' --include='*.md' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG' | head -5 || true)
-  BANNED4=$(grep -rnE 'used-to|no-longer' --include='*.md' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG|doc-writing-standards|doc-governance' | head -5 || true)
+  BANNED=$(grep -rn '维度[ ]*[1-5]' --include='*.md' --include='*.md.template' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG' | head -5 || true)
+  BANNED2=$(grep -rn 'D[0-4][ ]*维度' --include='*.md' --include='*.md.template' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG' | head -5 || true)
+  BANNED3=$(grep -rn 'ai-spec/ai-dev-docs' --include='*.md' --include='*.md.template' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG' | head -5 || true)
+  BANNED4=$(grep -rnE 'used-to|no-longer' --include='*.md' --include='*.md.template' . 2>/dev/null | grep -vE 'specs/|docs/journal/|docs/archive/|docs/adr/|docs/research/|CHANGELOG|doc-writing-standards|doc-governance' | head -5 || true)
   if [ -n "$BANNED$BANNED2$BANNED3$BANNED4" ]; then
     bad 8 "退役词汇/变更叙事词残留（历史叙事唯一合法归宿：journal/archive/CHANGELOG）"
     echo "$BANNED"; echo "$BANNED2"; echo "$BANNED3"; echo "$BANNED4"

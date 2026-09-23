@@ -154,19 +154,47 @@ def gate_must(mode="source"):
 def gate_sections():
     bad_refs, total = [], 0
     headings = {}
+    dup_secs = []
+    # 同文件小节编号唯一（双 §3.3 事故定规——2026-09-23 复审发现）
+    for f in repo_files(os.environ.get("DSH_GATE_MODE", "source")):
+        if hist_exempt(f): continue
+        seen = {}
+        for i, line in enumerate(open(f, encoding="utf-8"), 1):
+            hm = re.match(r"^#{2,4}\s+(\d+(?:\.\d+)?)", line)
+            if hm:
+                k = hm.group(1)
+                if k in seen: dup_secs.append(f"{f}:{i} 小节编号 {k} 重复（首见行 {seen[k]}）")
+                seen[k] = i
     for f in repo_files(os.environ.get("DSH_GATE_MODE", "source")):
         if hist_exempt(f): continue
         base = os.path.dirname(f)
         for i, line in enumerate(open(f, encoding="utf-8"), 1):
-            for m in re.finditer(r"§(\d+(?:\.\d+)?)", line):
+            for m in re.finditer(r"§(\d+(?:\.\d+)?)|第\s?(\d+(?:\.\d+)?)\s?节", line):
                 total += 1
                 # 行内全部 .md 链接逐一尝试：任一含该编号即通过（防首链接误配——2026-09-23 审计 M-2）
                 cands = []
                 for lm in re.finditer(r"\]\(([^)\s]+\.md)\)", line):
-                    t = lm.group(1).replace("{{SYS}}/", "")
-                    cands.append(os.path.normpath(os.path.join(base, t)))
+                    tt = lm.group(1).replace("{{SYS}}/", "")
+                    cands.append(os.path.normpath(os.path.join(base, tt)))
+                # 文字式引用（registries 骨架等 {{SYS}} 可变名场景）：
+                # a) 行内提及的 X.md（含裸文件名，全库唯一名匹配）
+                # b) 「<基名> 第 N 节」模式（如「verify 第 2 节」）
+                if not cands:
+                    for wm in re.finditer(r"([\w./-]+\.md)", line):
+                        tt = wm.group(1)
+                        for root in (base, "."):
+                            p = os.path.normpath(os.path.join(root, tt))
+                            if os.path.exists(p): cands.append(p); break
+                        else:
+                            hits = glob.glob("**/" + os.path.basename(tt), recursive=True)
+                            hits = [h for h in hits if not hist_exempt(h)]
+                            if len(hits) == 1: cands.append(hits[0])
+                if not cands:
+                    for wm in re.finditer(r"([\w-]+)\s+第\s?\d", line):
+                        hits = [h for h in glob.glob("**/" + wm.group(1) + ".md", recursive=True) if not hist_exempt(h)]
+                        if len(hits) == 1: cands.append(hits[0]); break
                 cands = [c for c in cands if os.path.exists(c)] or [f]
-                sec_full = m.group(1)
+                sec_full = m.group(1) or m.group(2)
                 sec_top = sec_full.split(".")[0]
                 ok_any = False
                 for cand in cands:
@@ -174,17 +202,18 @@ def gate_sections():
                         hs = set()
                         for h in open(cand, encoding="utf-8"):
                             hm = re.match(r"^#{2,4}\s+(\d+(?:\.\d+)?)", h)
-                            if hm: hs.add(hm.group(1).split(".")[0]); hs.add(hm.group(1))
+                            if hm: hs.add(hm.group(1))
                         headings[cand] = hs
-                    if sec_full in headings[cand] or sec_top in headings[cand]:
+                    if sec_full in headings[cand] or ("." not in sec_full and sec_full in headings[cand]):
                         ok_any = True; break
                 if not ok_any:
                     bad_refs.append(f"{f}:{i} §{sec_full} 在候选目标无对应编号标题")
-    if bad_refs:
-        print(f"✗ [6] §引用断裂 {len(bad_refs)} 处 / 共 {total}")
+    if bad_refs or dup_secs:
+        print(f"✗ [6] §引用断裂 {len(bad_refs)} 处 / 共 {total}；编号重复 {len(dup_secs)} 处")
+        for x in dup_secs[:10]: print("  ", x)
         for x in bad_refs[:15]: print("  ", x)
         return 1
-    print(f"✓ [6] {total} 处 §引用全部可解析（多链接逐一尝试）")
+    print(f"✓ [6] {total} 处 §引用全部可解析（多链接逐一尝试；小节编号唯一）")
     return 0
 
 def gate_backlog():
@@ -228,10 +257,16 @@ def gate_backlog():
         if path.endswith("README.md"): continue
         try: t2 = open(path, encoding="utf-8").read()
         except OSError: continue
-        for hm in re.finditer(r"(?:^|\s|\*\*|>)#(\d+)(?=[\s：:*）]|$)", t2, re.M):
-            if "下一编号" not in t2[max(0, hm.start()-20):hm.start()]:
+        if path == "backlog.md":
+            # 账本内只认卡片标题行的编号——正文/note/P4 前提行里的外部单号（上游 #789、JIRA #4471）不算已用编号
+            for hm in re.finditer(r"^- \[[ x~]\] \*\*#(\d+)", t2, re.M):
                 max_id = max(max_id, int(hm.group(1)))
-    if nxt <= max_id:
+        else:
+            # journal/specs 保留宽匹配（迁入卡为原文，编号出现在正文属正常）
+            for hm in re.finditer(r"(?:^|\s|\*\*|>)#(\d+)(?=[\s：:*）]|$)", t2, re.M):
+                if "下一编号" not in t2[max(0, hm.start()-20):hm.start()]:
+                    max_id = max(max_id, int(hm.group(1)))
+    if nxt > 0 and nxt <= max_id:
         issues.append(f"计数器 #{nxt} ≤ 最大编号 #{max_id}（编号永不回收——requirements 第 5 节）")
     # 4) P0-P4 节序唯一 + 卡片只在 P 节内 + P4 卡必含「前提」
     secs = [l for l in lines if l.startswith("## P")]

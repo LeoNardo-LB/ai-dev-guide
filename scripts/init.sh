@@ -74,7 +74,7 @@ PYEOF
 #     check.sh(部署门禁) + _gates.py(其依赖) + new-batch.sh + backlog.sh + release-version.sh
 #     init/upgrade/gen-index 依赖源仓 manifest，不随部署（升级用源仓 upgrade.sh）
 mkdir -p "$DEST/scripts"
-for S in check.sh _gates.py new-batch.sh backlog.sh release-version.sh scan-secrets.sh scan-secrets.allow; do
+for S in check.sh _gates.py new-batch.sh backlog.sh _backlog_core.py release-version.sh scan-secrets.sh scan-secrets.allow; do
   cp "$HERE/$S" "$DEST/scripts/$S"
 done
 chmod +x "$DEST/scripts/"*.sh

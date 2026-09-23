@@ -6,7 +6,7 @@
 
 - 设计 E2E 测试（写 Part A 期望文档）前
 - 执行 E2E 测试（填 Part B 实操文档）中
-- 交叉印证方法（同结论 ≥2 独立维度）见 [../workflows/verify.md](../workflows/verify.md) 第 3 节；判定词表（SCR/DYN）见 [e2e-runbook.md](./e2e-runbook.md)
+- 交叉印证方法（同结论 ≥2 独立维度）见 [../workflows/verify.md](../workflows/verify.md) 第 3 节；判定词表（SCR/DYN）见 [e2e-runbook.md](./e2e-runbook.md)。DYN 视觉分析是 E2E 内部交叉印证通道，不是完成声明的门禁输入（截图门禁口径以 [../workflows/verify.md](../workflows/verify.md) 第 5 节为准）
 
 ## 模板本体
 
