@@ -2,6 +2,17 @@
 
 本项目遵循 [语义化版本](https://semver.org/) 与 [Keep a Changelog](https://keepachangelog.com/)。
 
+## [2.6.2] - 2026-09-23
+
+### Fixed
+
+- backlog.sh 账本操作行 `run_gate` 与 python3 同行拼接：被当作多余参数传入内核，每次 add 产生 `run_gate` 垃圾 tag，且门禁 9 事后校验从未真实运行（外部反馈；拆为两行，双缺陷一并修复）
+- 部署面文档引用 source 平面文档（部署后 scrub 将悬空链接洗为纯文本，§6 残留令部署门禁 6 必挂）：templates/context.md 术语表行、templates/adr.md 两处 doc-governance 引用、bootstrap/onboarding.md 系统设计行——统一改为「源仓路径 + 未随部署分发」纯文本指针（外部反馈 1 处，同类扫描另修 3 处）
+
+### Added
+
+- selftest 部署夹具门禁覆盖从 1/9/10 扩为全量十项（门禁 6 此前从未在部署面夹具运行——本次逃逸根因）；新增 R12e 断言：add 零参数泄漏（卡片与迁入条目不得含脚本内部 token）
+
 ## [2.6.1] - 2026-09-23
 
 ### Added

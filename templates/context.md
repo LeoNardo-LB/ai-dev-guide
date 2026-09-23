@@ -62,4 +62,4 @@ Avoid 约束只限**名称性使用**（文档叙述/commit/公告里的叫法�
 ## Related
 
 - 需求澄清（术语澄清时机）：[../workflows/requirements.md](../workflows/requirements.md)
-- 系统术语（本系统自身词汇）：[../meta/system-design.md](../meta/system-design.md) §6
+- 系统术语（本系统自身词汇）：源仓 meta/system-design.md 术语表（未随部署分发）

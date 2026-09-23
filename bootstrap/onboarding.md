@@ -61,6 +61,6 @@ init.sh 选项：--dir 系统目录名（默认 ai-dev-guide）· --no-ui（无 
 
 ## Related
 
-- 系统设计与术语表：[../meta/system-design.md](../meta/system-design.md)
+- 系统设计与术语表：源仓 meta/system-design.md（未随部署分发）
 - 文档编辑卡（部署面）：[../meta/edit-card.md](../meta/edit-card.md)
 - 栈档案模板：[../stack/stack-profile.md](../stack/stack-profile.md)

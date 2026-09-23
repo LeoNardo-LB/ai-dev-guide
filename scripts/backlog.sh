@@ -35,7 +35,8 @@ run_gate() {
 
 case "$cmd" in
   next|show|add|note|status|prio|migrate)
-    python3 "$HERE/_backlog_core.py" "$BL" "$cmd" "$@"    run_gate || exit 1
+    python3 "$HERE/_backlog_core.py" "$BL" "$cmd" "$@"
+    run_gate || exit 1
     ;;
   journal)
     sub="${1:-}"

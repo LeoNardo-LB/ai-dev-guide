@@ -1,7 +1,7 @@
 # 架构决策记录模板（ADR Template）
 
 > 架构决策的记录格式：把「为什么这么定」沉淀为可追溯文档，避免后人推翻或误改承重决策。
-> 配合 [../standards/architecture.md](../standards/architecture.md)（承重规则）与 [../meta/doc-governance.md](../meta/doc-governance.md)（存放与生命周期）使用。
+> 配合 [../standards/architecture.md](../standards/architecture.md)（承重规则）与源仓 meta/doc-governance.md（存放与生命周期；未随部署分发）使用。
 
 ## Use when
 
@@ -99,4 +99,4 @@
 
 - 承重规则与架构规范：[../standards/architecture.md](../standards/architecture.md)
 - 技术债务登记：[../workflows/debt.md](../workflows/debt.md)
-- 文档存放决策与生命周期：[../meta/doc-governance.md](../meta/doc-governance.md)
+- 文档存放决策与生命周期：源仓 meta/doc-governance.md（未随部署分发）

@@ -44,7 +44,8 @@ if [ "$QUICK" = 0 ]; then
   else
     echo '  ✗ init.sh 失败'; sed -n '1,20p' "$TMP/init.log"; FAIL=1
   fi
-  bash scripts/check.sh --deployed "$D" --only 1,9,10 || FAIL=1
+  # [v2.6.2] 全量：原 --only 1,9,10 漏检门禁 6（部署面模板引用 source 平面文档逃逸——外部反馈定规）
+  bash scripts/check.sh --deployed "$D" || FAIL=1
 
   # R1 [v2.3.1]：--no-ui 裁剪后生成的 AGENTS.md 不得有悬空链接（门禁1在部署模式本就会抓）
   bash scripts/init.sh "$TMP/noui" --no-ui --no-example >/dev/null 2>&1 \
@@ -98,6 +99,12 @@ if [ "$QUICK" = 0 ]; then
 ' >> "$J"
   if bash "$CK" --deployed . --only 9 >/dev/null 2>&1; then echo "  ✗ R12d 5位编号失明"; FAIL=1; else echo "  ✓ R12d 5位编号计入防撞号"; fi
   sed -i.bak '/#10000 可见性探针/d' "$J" 2>/dev/null && rm -f "$J.bak"
+  # R12e [v2.6.2]：add 不得向卡片注入脚本内部 token（run_gate 曾被拼进 python3 参数行成垃圾 tag——外部反馈定规）
+  if grep -q 'run_gate' backlog.md 2>/dev/null || grep -q 'run_gate' "$J" 2>/dev/null; then
+    echo '  ✗ R12e add 参数泄漏（卡片含 run_gate 垃圾 tag）'; FAIL=1
+  else
+    echo '  ✓ R12e add 零参数泄漏（卡片与迁入条目无垃圾 tag）'
+  fi
   cd "$OWD_R12"
 
   # R6 [v2.4.0]：登记簿四件实例化齐备 + 部署基线存在
@@ -116,8 +123,8 @@ if [ "$QUICK" = 0 ]; then
   else
     echo '  ✗ R7 new-batch 产物异常'; head -3 "$JB" 2>/dev/null; FAIL=1
   fi
-  bash scripts/check.sh --deployed "$D" --only 1,10 >/dev/null 2>&1 \
-    && echo '  ✓ R7 部署门禁仍通过' || { echo '  ✗ R7 部署门禁失败'; FAIL=1; }
+  bash scripts/check.sh --deployed "$D" >/dev/null 2>&1 \
+    && echo '  ✓ R7 部署门禁仍通过（全量）' || { echo '  ✗ R7 部署门禁失败'; FAIL=1; }
 
   # R8 [v2.4.0]：门禁9 计数器识别行尾裸编号（journal 行尾 #N 须计入最大编号）
   printf '# 批次\n完结条目 #999\n' > "$D/docs/journal/2026-01-01-drill.md"
